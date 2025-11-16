@@ -591,6 +591,7 @@ interface IProfileManager {
   createProfile(displayName: string): PlayerProfile;
   getProfile(): PlayerProfile | null;
   updateProfile(profile: PlayerProfile): void;
+  updateDisplayName(newDisplayName: string): ProfileValidationResult;
   validateDisplayName(name: string): ProfileValidationResult;
   hasProfile(): boolean;
   clearProfile(): void;
@@ -725,11 +726,24 @@ interface BoardState {
 - Submit button (disabled until valid)
 - Cannot be dismissed without creating profile
 
-**Profile Settings (Optional Enhancement):**
-- Access via settings menu
-- Edit display name
-- View statistics (games played, wins)
-- Clear profile option with confirmation
+**Profile Settings Menu:**
+- Access via settings icon/button in game header
+- Opens modal overlay with profile options
+- Shows current display name
+- Provides "Edit Display Name" option
+- Shows statistics (games played, wins) - optional
+- Provides "Clear Profile" option with confirmation dialog
+
+**Edit Display Name Flow:**
+- Opens edit modal with current name pre-filled
+- Input field with same validation as creation
+- Real-time validation feedback
+- Character counter (X/20)
+- "Save" button (disabled until valid and changed)
+- "Cancel" button to dismiss without changes
+- On save, updates profile in local storage
+- Shows success confirmation message
+- Updates display name throughout UI immediately
 
 ### Error Handling
 

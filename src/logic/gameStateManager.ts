@@ -90,8 +90,8 @@ export class GameStateManager {
   /**
    * Reset the game to initial state
    */
-  reset(): void {
-    this.currentState = GameState.initializeBoard();
+  reset(player1Name?: string, player2Name?: string): void {
+    this.currentState = GameState.initializeBoard(player1Name, player2Name);
     this.moveHistory = [];
     this.stateHistory = [GameState.cloneState(this.currentState)];
   }

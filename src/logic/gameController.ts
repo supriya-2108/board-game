@@ -12,18 +12,39 @@ import { WinConditions } from './winConditions';
 export class GameController {
   private stateManager: GameStateManager;
   private config: GameConfig;
+  private player1Name: string;
+  private player2Name: string;
 
-  constructor(config?: GameConfig) {
+  constructor(config?: GameConfig, player1Name?: string, player2Name?: string) {
     this.config = config || { mode: GameMode.PVP, difficulty: Difficulty.EASY };
+    this.player1Name = player1Name || 'Player 1';
+    this.player2Name = player2Name || 'Player 2';
     this.stateManager = new GameStateManager();
   }
 
   /**
    * Initialize a new game with the given configuration
    */
-  initializeGame(config: GameConfig): void {
+  initializeGame(config: GameConfig, player1Name?: string, player2Name?: string): void {
     this.config = config;
-    this.stateManager.reset();
+    if (player1Name) this.player1Name = player1Name;
+    if (player2Name) this.player2Name = player2Name;
+    this.stateManager.reset(this.player1Name, this.player2Name);
+  }
+
+  /**
+   * Set player names
+   */
+  setPlayerNames(player1Name: string, player2Name: string): void {
+    this.player1Name = player1Name;
+    this.player2Name = player2Name;
+  }
+
+  /**
+   * Get player names
+   */
+  getPlayerNames(): { player1: string; player2: string } {
+    return { player1: this.player1Name, player2: this.player2Name };
   }
 
   /**
@@ -159,22 +180,28 @@ export class GameController {
    */
   switchMode(newConfig: GameConfig): void {
     this.config = newConfig;
-    this.stateManager.reset();
+    // Update player 2 name based on mode
+    if (newConfig.mode === GameMode.AI) {
+      this.player2Name = 'AI Opponent';
+    }
+    this.stateManager.reset(this.player1Name, this.player2Name);
   }
 
   /**
    * Start a new game with the same configuration
    */
   restartGame(): void {
-    this.stateManager.reset();
+    this.stateManager.reset(this.player1Name, this.player2Name);
   }
 
   /**
    * Start a new game with a different configuration
    */
-  newGame(config: GameConfig): void {
+  newGame(config: GameConfig, player1Name?: string, player2Name?: string): void {
     this.config = config;
-    this.stateManager.reset();
+    if (player1Name) this.player1Name = player1Name;
+    if (player2Name) this.player2Name = player2Name;
+    this.stateManager.reset(this.player1Name, this.player2Name);
   }
 
   /**

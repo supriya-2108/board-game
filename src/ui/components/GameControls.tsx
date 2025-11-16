@@ -8,10 +8,12 @@ interface GameControlsProps {
   currentPlayer: Player;
   gameStatus: GameStatus;
   resourcePoints: { [Player.PLAYER_1]: number; [Player.PLAYER_2]: number };
+  playerNames: { [Player.PLAYER_1]: string; [Player.PLAYER_2]: string };
   onModeChange: (mode: GameMode) => void;
   onDifficultyChange: (difficulty: Difficulty) => void;
   onNewGame: () => void;
   onRestart: () => void;
+  onOpenSettings?: () => void;
 }
 
 const GameControls: React.FC<GameControlsProps> = ({
@@ -20,21 +22,23 @@ const GameControls: React.FC<GameControlsProps> = ({
   currentPlayer,
   gameStatus,
   resourcePoints,
+  playerNames,
   onModeChange,
   onDifficultyChange,
   onNewGame,
   onRestart,
+  onOpenSettings,
 }) => {
   const getStatusMessage = () => {
     switch (gameStatus) {
       case GameStatus.PLAYER_1_WIN:
-        return 'Player 1 Wins!';
+        return `${playerNames[Player.PLAYER_1]} Wins!`;
       case GameStatus.PLAYER_2_WIN:
-        return 'Player 2 Wins!';
+        return `${playerNames[Player.PLAYER_2]} Wins!`;
       case GameStatus.DRAW:
         return 'Draw!';
       default:
-        return `Current Player: Player ${currentPlayer}`;
+        return `Current Player: ${playerNames[currentPlayer]}`;
     }
   };
 
@@ -42,6 +46,11 @@ const GameControls: React.FC<GameControlsProps> = ({
     <div className="game-controls">
       <div className="controls-header">
         <h2>Strategic Board Game</h2>
+        {onOpenSettings && (
+          <button className="settings-icon" onClick={onOpenSettings} title="Profile Settings">
+            ⚙️
+          </button>
+        )}
       </div>
 
       <div className="game-status">
@@ -52,11 +61,11 @@ const GameControls: React.FC<GameControlsProps> = ({
 
       <div className="resource-display">
         <div className="resource-item">
-          <span className="resource-label">Player 1 Resources:</span>
+          <span className="resource-label">{playerNames[Player.PLAYER_1]} Resources:</span>
           <span className="resource-value">{resourcePoints[Player.PLAYER_1]}</span>
         </div>
         <div className="resource-item">
-          <span className="resource-label">Player 2 Resources:</span>
+          <span className="resource-label">{playerNames[Player.PLAYER_2]} Resources:</span>
           <span className="resource-value">{resourcePoints[Player.PLAYER_2]}</span>
         </div>
       </div>

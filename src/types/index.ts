@@ -26,6 +26,7 @@ export interface Piece {
 export interface BoardState {
   pieces: Piece[];
   currentPlayer: Player;
+  playerNames: { [Player.PLAYER_1]: string; [Player.PLAYER_2]: string };
   resourcePoints: { [Player.PLAYER_1]: number; [Player.PLAYER_2]: number };
   moveCount: number;
   capturesSinceLastMove: number;
@@ -67,4 +68,27 @@ export enum GameMode {
 export interface GameConfig {
   mode: GameMode;
   difficulty?: Difficulty;
+}
+
+export interface PlayerProfile {
+  id: string;
+  displayName: string;
+  createdAt: number;
+  gamesPlayed?: number;
+  wins?: number;
+}
+
+export interface ProfileValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
+export interface IProfileManager {
+  createProfile(displayName: string): PlayerProfile;
+  getProfile(): PlayerProfile | null;
+  updateProfile(profile: PlayerProfile): void;
+  updateDisplayName(newDisplayName: string): ProfileValidationResult;
+  validateDisplayName(name: string): ProfileValidationResult;
+  hasProfile(): boolean;
+  clearProfile(): void;
 }

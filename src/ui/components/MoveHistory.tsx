@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Move, PieceType } from '../../types';
+import { Move, PieceType, Player } from '../../types';
 import './MoveHistory.css';
 
 interface MoveHistoryProps {
   moves: Move[];
+  playerNames: { [Player.PLAYER_1]: string; [Player.PLAYER_2]: string };
   onMoveClick?: (moveIndex: number) => void;
   onUndo?: (count: number) => void;
 }
 
 const MoveHistory: React.FC<MoveHistoryProps> = ({
   moves,
+  playerNames,
   onMoveClick,
   onUndo,
 }) => {
@@ -17,7 +19,7 @@ const MoveHistory: React.FC<MoveHistoryProps> = ({
   const [undoCount, setUndoCount] = useState(1);
 
   const formatMove = (move: Move, index: number): string => {
-    const player = `P${move.piece.owner}`;
+    const player = playerNames[move.piece.owner];
     const pieceType = getPieceTypeName(move.piece.type);
     const from = positionToNotation(move.from);
     const to = positionToNotation(move.to);

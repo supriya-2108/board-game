@@ -186,3 +186,6 @@ This document specifies the requirements for a turn-based strategic board game f
 3. WHEN a Player enters a Display_Name, THE Game_System SHALL validate that the Display_Name contains only alphanumeric characters and spaces
 4. WHEN a Player saves their profile, THE Game_System SHALL persist the Player_Profile in local storage
 5. WHEN a game is in progress, THE Game_System SHALL display the Display_Name for each Player instead of generic labels
+6. WHEN a Player accesses profile settings, THE Game_System SHALL allow the Player to edit their Display_Name
+7. WHEN a Player updates their Display_Name, THE Game_System SHALL validate the new name using the same validation rules
+8. WHEN a Player saves an updated Display_Name, THE Game_System SHALL persist the changes to local storage

@@ -335,24 +335,25 @@
   - Fix any gaps in coverage
   - _Requirements: 12.5_
 
-- [ ] 11. Implement player profile system
-- [ ] 11.1 Create PlayerProfile type definitions and interfaces
+- [x] 11. Implement player profile system
+- [x] 11.1 Create PlayerProfile type definitions and interfaces
   - Define PlayerProfile interface with id, displayName, createdAt fields
   - Define ProfileValidationResult interface
   - Define IProfileManager interface with CRUD operations
   - Add playerNames field to BoardState interface
   - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [ ] 11.2 Implement ProfileManager component
+- [x] 11.2 Implement ProfileManager component
   - Create ProfileManager class implementing IProfileManager
   - Implement createProfile() method with UUID generation
   - Implement getProfile() method to retrieve from local storage
   - Implement updateProfile() method to save to local storage
+  - Implement updateDisplayName() method to edit display name
   - Implement hasProfile() method to check profile existence
   - Implement clearProfile() method for profile deletion
-  - _Requirements: 13.1, 13.4_
+  - _Requirements: 13.1, 13.4, 13.6, 13.7, 13.8_
 
-- [ ] 11.3 Implement display name validation
+- [x] 11.3 Implement display name validation
   - Create validateDisplayName() function
   - Validate length between 1-20 characters
   - Validate alphanumeric characters and spaces only
@@ -361,7 +362,7 @@
   - Return descriptive error messages for each validation failure
   - _Requirements: 13.2, 13.3_
 
-- [ ] 11.4 Implement local storage integration
+- [x] 11.4 Implement local storage integration
   - Save profile to local storage on creation
   - Load profile from local storage on app launch
   - Handle local storage unavailable scenarios (fallback to session-only)
@@ -369,7 +370,7 @@
   - Use 'playerProfile' as storage key
   - _Requirements: 13.4_
 
-- [ ] 11.5 Create profile creation UI component
+- [x] 11.5 Create profile creation UI component
   - Create modal overlay for first-time users
   - Add input field for display name with validation
   - Show real-time validation feedback
@@ -378,7 +379,7 @@
   - Prevent modal dismissal without profile creation
   - _Requirements: 13.1, 13.2, 13.3_
 
-- [ ] 11.6 Integrate profiles with game system
+- [x] 11.6 Integrate profiles with game system
   - Update GameController to use player display names
   - Load profile on game initialization
   - Show profile creation modal if no profile exists
@@ -387,7 +388,7 @@
   - In AI mode, show user's name vs "AI Opponent"
   - _Requirements: 13.5_
 
-- [ ] 11.7 Update UI to display player names
+- [x] 11.7 Update UI to display player names
   - Show display names in current turn indicator
   - Show display names in move history ("John: Pawn E2→E4")
   - Show display names in win/draw announcements
@@ -395,19 +396,41 @@
   - Update all "Player 1" / "Player 2" references
   - _Requirements: 13.5_
 
-- [ ]* 11.8 Write unit tests for profile system
+- [x] 11.8 Create profile settings UI component
+  - Add settings icon/button in game header
+  - Create settings modal overlay
+  - Display current display name
+  - Add "Edit Display Name" button
+  - Add "Clear Profile" button with confirmation dialog
+  - Show optional statistics (games played, wins)
+  - _Requirements: 13.6_
+
+- [x] 11.9 Implement edit display name functionality
+  - Create edit display name modal
+  - Pre-fill input with current display name
+  - Show real-time validation feedback
+  - Add character counter (X/20)
+  - Disable save button until valid and changed
+  - Add cancel button to dismiss without changes
+  - On save, call updateDisplayName() and update UI
+  - Show success confirmation message
+  - _Requirements: 13.6, 13.7, 13.8_
+
+- [ ]* 11.10 Write unit tests for profile system
   - Test display name validation (all edge cases)
   - Test profile creation and storage
   - Test profile retrieval
   - Test profile update
+  - Test display name editing
   - Test local storage fallback scenarios
   - Test validation error messages
   - _Requirements: 12.1, 12.2_
 
-- [ ]* 11.9 Write integration tests for profile flow
+- [ ]* 11.11 Write integration tests for profile flow
   - Test first-time user profile creation flow
   - Test returning user profile load flow
   - Test profile persistence across page reloads
   - Test display names shown correctly in game UI
+  - Test edit display name flow
   - Test PvP mode with two player names
   - _Requirements: 12.4_

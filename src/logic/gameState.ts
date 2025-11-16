@@ -8,7 +8,7 @@ export class GameState {
   /**
    * Initialize a new game board with starting positions
    */
-  static initializeBoard(): BoardState {
+  static initializeBoard(player1Name: string = 'Player 1', player2Name: string = 'Player 2'): BoardState {
     const pieces: Piece[] = [];
 
     // Player 1 pieces (rows 1-2)
@@ -64,6 +64,10 @@ export class GameState {
     return {
       pieces,
       currentPlayer: Player.PLAYER_1,
+      playerNames: {
+        [Player.PLAYER_1]: player1Name,
+        [Player.PLAYER_2]: player2Name
+      },
       resourcePoints: {
         [Player.PLAYER_1]: 0,
         [Player.PLAYER_2]: 0
@@ -114,6 +118,7 @@ export class GameState {
     return {
       pieces: newPieces,
       currentPlayer: nextPlayer,
+      playerNames: { ...state.playerNames },
       resourcePoints: newResourcePoints,
       moveCount: isUpgradeOnly ? state.moveCount : state.moveCount + 1,
       capturesSinceLastMove: move.capturedPiece ? 0 : (isUpgradeOnly ? state.capturesSinceLastMove : state.capturesSinceLastMove + 1)
@@ -136,6 +141,7 @@ export class GameState {
     return {
       pieces: state.pieces.map(p => ({ ...p, position: { ...p.position } })),
       currentPlayer: state.currentPlayer,
+      playerNames: { ...state.playerNames },
       resourcePoints: { ...state.resourcePoints },
       moveCount: state.moveCount,
       capturesSinceLastMove: state.capturesSinceLastMove

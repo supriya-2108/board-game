@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { GameController } from '../../logic/gameController';
-import { GameMode, Difficulty, Position, Piece, Player } from '../../types';
+import { GameMode, Difficulty, Position, Piece, Player, PlayerProfile } from '../../types';
+import { ProfileManager } from '../../logic/profileManager';
 import Board from './Board';
 import GameControls from './GameControls';
 import MoveHistory from './MoveHistory';
 import ErrorTooltip from './ErrorTooltip';
+import { ProfileCreation } from './ProfileCreation';
+import { ProfileSettings } from './ProfileSettings';
+import { EditDisplayName } from './EditDisplayName';
 import './Game.css';
 
 const Game: React.FC = () => {
+  const [profileManager] = useState(() => new ProfileManager());
+  const [showProfileCreation, setShowProfileCreation] = useState(false);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
+  const [showEditDisplayName, setShowEditDisplayName] = useState(false);
+  const [currentProfile, setCurrentProfile] = useState<PlayerProfile | null>(null);
+  const [player1Name, setPlayer1Name] = useState('Player 1');
+  const [player2Name, setPlayer2Name] = useState('Player 2');
   const [controller] = useState(() => new GameController());
   const [boardState, setBoardState] = useState(controller.getGameState());
   const [gameStatus, setGameStatus] = useState(controller.getGameStatus());
@@ -20,9 +31,66 @@ const Game: React.FC = () => {
   const [draggedPiece, setDraggedPiece] = useState<Piece | null>(null);
 
   useEffect(() => {
-    controller.initializeGame({ mode: gameMode, difficulty });
-    updateGameState();
+    // Check if profile exists
+    if (!profileManager.hasProfile()) {
+      setShowProfileCreation(true);
+    } else {
+      const profile = profileManager.getProfile();
+      if (profile) {
+        setCurrentProfile(profile);
+        setPlayer1Name(profile.displayName);
+        initializeGameWithNames(profile.displayName, 'Player 2');
+      }
+    }
   }, []);
+
+  const initializeGameWithNames = (p1Name: string, p2Name: string) => {
+    setPlayer1Name(p1Name);
+    setPlayer2Name(p2Name);
+    controller.initializeGame({ mode: gameMode, difficulty }, p1Name, p2Name);
+    updateGameState();
+  };
+
+  const handleProfileCreated = (displayName: string) => {
+    setShowProfileCreation(false);
+    const profile = profileManager.getProfile();
+    if (profile) {
+      setCurrentProfile(profile);
+    }
+    const p2Name = gameMode === GameMode.AI ? 'AI Opponent' : 'Player 2';
+    initializeGameWithNames(displayName, p2Name);
+  };
+
+  const handleOpenSettings = () => {
+    const profile = profileManager.getProfile();
+    if (profile) {
+      setCurrentProfile(profile);
+      setShowProfileSettings(true);
+    }
+  };
+
+  const handleCloseSettings = () => {
+    setShowProfileSettings(false);
+  };
+
+  const handleEditDisplayName = () => {
+    setShowProfileSettings(false);
+    setShowEditDisplayName(true);
+  };
+
+  const handleDisplayNameSaved = (newName: string) => {
+    setPlayer1Name(newName);
+    controller.setPlayerNames(newName, player2Name);
+    updateGameState();
+    const profile = profileManager.getProfile();
+    if (profile) {
+      setCurrentProfile(profile);
+    }
+  };
+
+  const handleCloseEditDisplayName = () => {
+    setShowEditDisplayName(false);
+  };
 
   const updateGameState = () => {
     setBoardState(controller.getGameState());
@@ -101,7 +169,9 @@ const Game: React.FC = () => {
 
   const handleModeChange = (mode: GameMode) => {
     setGameMode(mode);
-    controller.newGame({ mode, difficulty });
+    const p2Name = mode === GameMode.AI ? 'AI Opponent' : 'Player 2';
+    setPlayer2Name(p2Name);
+    controller.newGame({ mode, difficulty }, player1Name, p2Name);
     updateGameState();
     setSelectedPiece(null);
     setValidMoves([]);
@@ -109,14 +179,14 @@ const Game: React.FC = () => {
 
   const handleDifficultyChange = (newDifficulty: Difficulty) => {
     setDifficulty(newDifficulty);
-    controller.newGame({ mode: gameMode, difficulty: newDifficulty });
+    controller.newGame({ mode: gameMode, difficulty: newDifficulty }, player1Name, player2Name);
     updateGameState();
     setSelectedPiece(null);
     setValidMoves([]);
   };
 
   const handleNewGame = () => {
-    controller.newGame({ mode: gameMode, difficulty });
+    controller.newGame({ mode: gameMode, difficulty }, player1Name, player2Name);
     updateGameState();
     setSelectedPiece(null);
     setValidMoves([]);
@@ -150,6 +220,27 @@ const Game: React.FC = () => {
 
   return (
     <div className="game-container">
+      {showProfileCreation && (
+        <ProfileCreation onProfileCreated={handleProfileCreated} />
+      )}
+      
+      {showProfileSettings && currentProfile && (
+        <ProfileSettings
+          profile={currentProfile}
+          onClose={handleCloseSettings}
+          onProfileUpdated={handleDisplayNameSaved}
+          onEditDisplayName={handleEditDisplayName}
+        />
+      )}
+      
+      {showEditDisplayName && (
+        <EditDisplayName
+          currentName={player1Name}
+          onClose={handleCloseEditDisplayName}
+          onSave={handleDisplayNameSaved}
+        />
+      )}
+      
       <ErrorTooltip message={errorMessage} onClose={handleErrorClose} />
       
       <div className="game-layout">
@@ -160,10 +251,12 @@ const Game: React.FC = () => {
             currentPlayer={boardState.currentPlayer}
             gameStatus={gameStatus}
             resourcePoints={boardState.resourcePoints}
+            playerNames={boardState.playerNames}
             onModeChange={handleModeChange}
             onDifficultyChange={handleDifficultyChange}
             onNewGame={handleNewGame}
             onRestart={handleRestart}
+            onOpenSettings={handleOpenSettings}
           />
         </aside>
 
@@ -183,6 +276,7 @@ const Game: React.FC = () => {
         <aside className="game-history">
           <MoveHistory
             moves={moveHistory}
+            playerNames={boardState.playerNames}
             onMoveClick={handleMoveClick}
             onUndo={handleUndo}
           />
