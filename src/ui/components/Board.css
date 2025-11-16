@@ -1,0 +1,31 @@
+.board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #333;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.board-row {
+  display: flex;
+}
+
+/* Mobile-first: smaller board */
+@media (max-width: 767px) {
+  .board-container {
+    padding: 0.5rem;
+  }
+}
+
+/* Desktop: larger board */
+@media (min-width: 768px) {
+  .board-container {
+    padding: 2rem;
+  }
+}

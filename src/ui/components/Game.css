@@ -1,0 +1,68 @@
+.game-container {
+  min-height: 100vh;
+  background-color: #e0e0e0;
+  padding: 1rem;
+}
+
+.game-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+/* Mobile layout: stacked */
+@media (max-width: 767px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "controls"
+      "board"
+      "history";
+  }
+
+  .game-sidebar {
+    grid-area: controls;
+  }
+
+  .game-main {
+    grid-area: board;
+  }
+
+  .game-history {
+    grid-area: history;
+  }
+}
+
+/* Desktop layout: sidebar + board + history */
+@media (min-width: 768px) {
+  .game-layout {
+    grid-template-columns: 300px 1fr 300px;
+    grid-template-areas: "controls board history";
+  }
+
+  .game-sidebar {
+    grid-area: controls;
+  }
+
+  .game-main {
+    grid-area: board;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .game-history {
+    grid-area: history;
+  }
+}
+
+/* Tablet layout: controls on top, board and history side by side */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .game-layout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "controls controls"
+      "board history";
+  }
+}
