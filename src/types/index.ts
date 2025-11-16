@@ -2,7 +2,9 @@ export enum PieceType {
   PAWN = 'PAWN',
   KNIGHT = 'KNIGHT',
   BISHOP = 'BISHOP',
-  QUEEN = 'QUEEN'
+  ROOK = 'ROOK',
+  QUEEN = 'QUEEN',
+  KING = 'KING'
 }
 
 export enum Player {

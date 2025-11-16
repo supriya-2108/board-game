@@ -2,7 +2,9 @@ import { Piece, Position, BoardState, PieceType } from '../types';
 import { PawnLogic } from './pawnLogic';
 import { KnightLogic } from './knightLogic';
 import { BishopLogic } from './bishopLogic';
+import { RookLogic } from './rookLogic';
 import { QueenLogic } from './queenLogic';
+import { KingLogic } from './kingLogic';
 
 /**
  * Unified interface for piece movement logic
@@ -19,8 +21,12 @@ export class PieceLogic {
         return KnightLogic.getValidDestinations(piece, board);
       case PieceType.BISHOP:
         return BishopLogic.getValidDestinations(piece, board);
+      case PieceType.ROOK:
+        return RookLogic.getValidDestinations(piece, board);
       case PieceType.QUEEN:
         return QueenLogic.getValidDestinations(piece, board);
+      case PieceType.KING:
+        return KingLogic.getValidDestinations(piece, board);
       default:
         return [];
     }
@@ -37,8 +43,12 @@ export class PieceLogic {
         return KnightLogic.isValidMove(piece, to, board);
       case PieceType.BISHOP:
         return BishopLogic.isValidMove(piece, to, board);
+      case PieceType.ROOK:
+        return RookLogic.isValidMove(piece, to, board);
       case PieceType.QUEEN:
         return QueenLogic.isValidMove(piece, to, board);
+      case PieceType.KING:
+        return KingLogic.isValidMove(piece, to, board);
       default:
         return false;
     }
@@ -55,8 +65,12 @@ export class PieceLogic {
         return KnightLogic.canCapture(piece, target, board);
       case PieceType.BISHOP:
         return BishopLogic.canCapture(piece, target, board);
+      case PieceType.ROOK:
+        return RookLogic.canCapture(piece, target, board);
       case PieceType.QUEEN:
         return QueenLogic.canCapture(piece, target, board);
+      case PieceType.KING:
+        return KingLogic.canCapture(piece, target, board);
       default:
         return false;
     }
@@ -64,14 +78,18 @@ export class PieceLogic {
 
   /**
    * Check if path is clear between two positions
-   * (Only applicable for Bishop and Queen)
+   * (Only applicable for Bishop, Rook, Queen, and King)
    */
   static isPathClear(from: Position, to: Position, board: BoardState, pieceType: PieceType): boolean {
     switch (pieceType) {
       case PieceType.BISHOP:
         return BishopLogic.isPathClear(from, to, board);
+      case PieceType.ROOK:
+        return RookLogic.isPathClear(from, to, board);
       case PieceType.QUEEN:
         return QueenLogic.isPathClear(from, to, board);
+      case PieceType.KING:
+        return KingLogic.isPathClear(from, to, board);
       case PieceType.KNIGHT:
         return true; // Knights jump over pieces
       case PieceType.PAWN:
@@ -84,4 +102,4 @@ export class PieceLogic {
 }
 
 // Export individual piece logic classes for direct access if needed
-export { PawnLogic, KnightLogic, BishopLogic, QueenLogic };
+export { PawnLogic, KnightLogic, BishopLogic, RookLogic, QueenLogic, KingLogic };

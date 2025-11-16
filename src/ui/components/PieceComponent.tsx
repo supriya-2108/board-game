@@ -36,7 +36,9 @@ const PieceComponent: React.FC<PieceComponentProps> = ({
       [PieceType.PAWN]: owner === Player.PLAYER_1 ? '♙' : '♟',
       [PieceType.KNIGHT]: owner === Player.PLAYER_1 ? '♘' : '♞',
       [PieceType.BISHOP]: owner === Player.PLAYER_1 ? '♗' : '♝',
+      [PieceType.ROOK]: owner === Player.PLAYER_1 ? '♖' : '♜',
       [PieceType.QUEEN]: owner === Player.PLAYER_1 ? '♕' : '♛',
+      [PieceType.KING]: owner === Player.PLAYER_1 ? '♔' : '♚',
     };
     return symbols[type];
   };

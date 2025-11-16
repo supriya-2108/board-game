@@ -4,24 +4,24 @@ import { Player, PieceType, Move } from '../../types';
 
 describe('GameState', () => {
   describe('initializeBoard', () => {
-    it('should create an 8x8 board with 24 pieces', () => {
+    it('should create an 8x8 board with 32 pieces', () => {
       const state = GameState.initializeBoard();
       
-      expect(state.pieces.length).toBe(24);
+      expect(state.pieces.length).toBe(32);
     });
 
-    it('should place 12 pieces for Player 1', () => {
+    it('should place 16 pieces for Player 1', () => {
       const state = GameState.initializeBoard();
       const player1Pieces = state.pieces.filter(p => p.owner === Player.PLAYER_1);
       
-      expect(player1Pieces.length).toBe(12);
+      expect(player1Pieces.length).toBe(16);
     });
 
-    it('should place 12 pieces for Player 2', () => {
+    it('should place 16 pieces for Player 2', () => {
       const state = GameState.initializeBoard();
       const player2Pieces = state.pieces.filter(p => p.owner === Player.PLAYER_2);
       
-      expect(player2Pieces.length).toBe(12);
+      expect(player2Pieces.length).toBe(16);
     });
 
     it('should place Player 1 pieces on rows 1-2', () => {
@@ -44,31 +44,88 @@ describe('GameState', () => {
       });
     });
 
-    it('should have 4 Pawns per player', () => {
+    it('should have 8 Pawns per player', () => {
       const state = GameState.initializeBoard();
       const player1Pawns = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.type === PieceType.PAWN);
       const player2Pawns = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.type === PieceType.PAWN);
       
-      expect(player1Pawns.length).toBe(4);
-      expect(player2Pawns.length).toBe(4);
+      expect(player1Pawns.length).toBe(8);
+      expect(player2Pawns.length).toBe(8);
     });
 
-    it('should have 4 Knights per player', () => {
+    it('should have 2 Knights per player', () => {
       const state = GameState.initializeBoard();
       const player1Knights = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.type === PieceType.KNIGHT);
       const player2Knights = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.type === PieceType.KNIGHT);
       
-      expect(player1Knights.length).toBe(4);
-      expect(player2Knights.length).toBe(4);
+      expect(player1Knights.length).toBe(2);
+      expect(player2Knights.length).toBe(2);
     });
 
-    it('should have 4 Bishops per player', () => {
+    it('should have 2 Bishops per player', () => {
       const state = GameState.initializeBoard();
       const player1Bishops = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.type === PieceType.BISHOP);
       const player2Bishops = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.type === PieceType.BISHOP);
       
-      expect(player1Bishops.length).toBe(4);
-      expect(player2Bishops.length).toBe(4);
+      expect(player1Bishops.length).toBe(2);
+      expect(player2Bishops.length).toBe(2);
+    });
+
+    it('should have 2 Rooks per player', () => {
+      const state = GameState.initializeBoard();
+      const player1Rooks = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.type === PieceType.ROOK);
+      const player2Rooks = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.type === PieceType.ROOK);
+      
+      expect(player1Rooks.length).toBe(2);
+      expect(player2Rooks.length).toBe(2);
+    });
+
+    it('should have 1 Queen per player', () => {
+      const state = GameState.initializeBoard();
+      const player1Queens = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.type === PieceType.QUEEN);
+      const player2Queens = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.type === PieceType.QUEEN);
+      
+      expect(player1Queens.length).toBe(1);
+      expect(player2Queens.length).toBe(1);
+    });
+
+    it('should have 1 King per player', () => {
+      const state = GameState.initializeBoard();
+      const player1Kings = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.type === PieceType.KING);
+      const player2Kings = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.type === PieceType.KING);
+      
+      expect(player1Kings.length).toBe(1);
+      expect(player2Kings.length).toBe(1);
+    });
+
+    it('should arrange Player 1 back row as Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook', () => {
+      const state = GameState.initializeBoard();
+      const backRow = state.pieces.filter(p => p.owner === Player.PLAYER_1 && p.position.row === 1)
+        .sort((a, b) => a.position.col - b.position.col);
+      
+      expect(backRow[0].type).toBe(PieceType.ROOK);
+      expect(backRow[1].type).toBe(PieceType.KNIGHT);
+      expect(backRow[2].type).toBe(PieceType.BISHOP);
+      expect(backRow[3].type).toBe(PieceType.QUEEN);
+      expect(backRow[4].type).toBe(PieceType.KING);
+      expect(backRow[5].type).toBe(PieceType.BISHOP);
+      expect(backRow[6].type).toBe(PieceType.KNIGHT);
+      expect(backRow[7].type).toBe(PieceType.ROOK);
+    });
+
+    it('should arrange Player 2 back row as Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook', () => {
+      const state = GameState.initializeBoard();
+      const backRow = state.pieces.filter(p => p.owner === Player.PLAYER_2 && p.position.row === 8)
+        .sort((a, b) => a.position.col - b.position.col);
+      
+      expect(backRow[0].type).toBe(PieceType.ROOK);
+      expect(backRow[1].type).toBe(PieceType.KNIGHT);
+      expect(backRow[2].type).toBe(PieceType.BISHOP);
+      expect(backRow[3].type).toBe(PieceType.QUEEN);
+      expect(backRow[4].type).toBe(PieceType.KING);
+      expect(backRow[5].type).toBe(PieceType.BISHOP);
+      expect(backRow[6].type).toBe(PieceType.KNIGHT);
+      expect(backRow[7].type).toBe(PieceType.ROOK);
     });
 
     it('should set Player 1 as the active player', () => {

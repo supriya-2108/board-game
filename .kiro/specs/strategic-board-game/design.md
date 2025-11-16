@@ -87,7 +87,9 @@ enum PieceType {
   PAWN = 'PAWN',
   KNIGHT = 'KNIGHT',
   BISHOP = 'BISHOP',
-  QUEEN = 'QUEEN'
+  ROOK = 'ROOK',
+  QUEEN = 'QUEEN',
+  KING = 'KING'
 }
 
 enum Player {
@@ -220,11 +222,24 @@ This arrangement ensures both players have identical starting positions and stra
 - Capture: Captures by landing on opponent piece
 - Obstruction: Cannot move through pieces; stops at first piece encountered
 
-**Queen** (Promoted Pawn)
-- Combines Bishop diagonal movement with extended forward movement
-- Can move diagonally any distance or forward any distance
+**Rook**
+- Direction: Horizontal or vertical only
+- Distance: Any number of squares
+- Capture: Captures by landing on opponent piece
+- Obstruction: Cannot move through pieces; stops at first piece encountered
+
+**Queen** (Starting piece or Promoted Pawn)
+- Combines Rook and Bishop movement
+- Can move horizontally, vertically, or diagonally any distance
 - Capture: Captures by landing on opponent piece
 - Obstruction: Cannot move through pieces
+
+**King**
+- Direction: Any direction (horizontal, vertical, or diagonal)
+- Distance: Exactly 1 square
+- Capture: Captures by landing on opponent piece
+- Special: Game ends immediately if King is captured
+- Critical: Losing the King results in immediate defeat
 
 ### Resource System
 
@@ -311,7 +326,9 @@ function getPieceValue(type: PieceType): number {
     case PieceType.PAWN: return 10;
     case PieceType.KNIGHT: return 30;
     case PieceType.BISHOP: return 30;
-    case PieceType.QUEEN: return 50;
+    case PieceType.ROOK: return 50;
+    case PieceType.QUEEN: return 90;
+    case PieceType.KING: return 10000; // Infinite value - losing King ends game
   }
 }
 ```

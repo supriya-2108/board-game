@@ -12,16 +12,16 @@ export class GameState {
     const pieces: Piece[] = [];
 
     // Player 1 pieces (rows 1-2)
-    // Row 1: 4 Knights, 4 Bishops (back row)
+    // Row 1: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook (back row)
     pieces.push(
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_1, position: { row: 1, col: 1 }, hasMoved: false, id: 'p1-knight-1' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_1, position: { row: 1, col: 2 }, hasMoved: false, id: 'p1-knight-2' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_1, position: { row: 1, col: 3 }, hasMoved: false, id: 'p1-knight-3' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_1, position: { row: 1, col: 4 }, hasMoved: false, id: 'p1-knight-4' },
-      { type: PieceType.BISHOP, owner: Player.PLAYER_1, position: { row: 1, col: 5 }, hasMoved: false, id: 'p1-bishop-1' },
+      { type: PieceType.ROOK, owner: Player.PLAYER_1, position: { row: 1, col: 1 }, hasMoved: false, id: 'p1-rook-1' },
+      { type: PieceType.KNIGHT, owner: Player.PLAYER_1, position: { row: 1, col: 2 }, hasMoved: false, id: 'p1-knight-1' },
+      { type: PieceType.BISHOP, owner: Player.PLAYER_1, position: { row: 1, col: 3 }, hasMoved: false, id: 'p1-bishop-1' },
+      { type: PieceType.QUEEN, owner: Player.PLAYER_1, position: { row: 1, col: 4 }, hasMoved: false, id: 'p1-queen' },
+      { type: PieceType.KING, owner: Player.PLAYER_1, position: { row: 1, col: 5 }, hasMoved: false, id: 'p1-king' },
       { type: PieceType.BISHOP, owner: Player.PLAYER_1, position: { row: 1, col: 6 }, hasMoved: false, id: 'p1-bishop-2' },
-      { type: PieceType.BISHOP, owner: Player.PLAYER_1, position: { row: 1, col: 7 }, hasMoved: false, id: 'p1-bishop-3' },
-      { type: PieceType.BISHOP, owner: Player.PLAYER_1, position: { row: 1, col: 8 }, hasMoved: false, id: 'p1-bishop-4' }
+      { type: PieceType.KNIGHT, owner: Player.PLAYER_1, position: { row: 1, col: 7 }, hasMoved: false, id: 'p1-knight-2' },
+      { type: PieceType.ROOK, owner: Player.PLAYER_1, position: { row: 1, col: 8 }, hasMoved: false, id: 'p1-rook-2' }
     );
 
     // Row 2: 8 Pawns (front row)
@@ -49,16 +49,16 @@ export class GameState {
       { type: PieceType.PAWN, owner: Player.PLAYER_2, position: { row: 7, col: 8 }, hasMoved: false, id: 'p2-pawn-8' }
     );
 
-    // Row 8: 4 Bishops, 4 Knights (back row)
+    // Row 8: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook (back row)
     pieces.push(
-      { type: PieceType.BISHOP, owner: Player.PLAYER_2, position: { row: 8, col: 1 }, hasMoved: false, id: 'p2-bishop-1' },
-      { type: PieceType.BISHOP, owner: Player.PLAYER_2, position: { row: 8, col: 2 }, hasMoved: false, id: 'p2-bishop-2' },
-      { type: PieceType.BISHOP, owner: Player.PLAYER_2, position: { row: 8, col: 3 }, hasMoved: false, id: 'p2-bishop-3' },
-      { type: PieceType.BISHOP, owner: Player.PLAYER_2, position: { row: 8, col: 4 }, hasMoved: false, id: 'p2-bishop-4' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_2, position: { row: 8, col: 5 }, hasMoved: false, id: 'p2-knight-1' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_2, position: { row: 8, col: 6 }, hasMoved: false, id: 'p2-knight-2' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_2, position: { row: 8, col: 7 }, hasMoved: false, id: 'p2-knight-3' },
-      { type: PieceType.KNIGHT, owner: Player.PLAYER_2, position: { row: 8, col: 8 }, hasMoved: false, id: 'p2-knight-4' }
+      { type: PieceType.ROOK, owner: Player.PLAYER_2, position: { row: 8, col: 1 }, hasMoved: false, id: 'p2-rook-1' },
+      { type: PieceType.KNIGHT, owner: Player.PLAYER_2, position: { row: 8, col: 2 }, hasMoved: false, id: 'p2-knight-1' },
+      { type: PieceType.BISHOP, owner: Player.PLAYER_2, position: { row: 8, col: 3 }, hasMoved: false, id: 'p2-bishop-1' },
+      { type: PieceType.QUEEN, owner: Player.PLAYER_2, position: { row: 8, col: 4 }, hasMoved: false, id: 'p2-queen' },
+      { type: PieceType.KING, owner: Player.PLAYER_2, position: { row: 8, col: 5 }, hasMoved: false, id: 'p2-king' },
+      { type: PieceType.BISHOP, owner: Player.PLAYER_2, position: { row: 8, col: 6 }, hasMoved: false, id: 'p2-bishop-2' },
+      { type: PieceType.KNIGHT, owner: Player.PLAYER_2, position: { row: 8, col: 7 }, hasMoved: false, id: 'p2-knight-2' },
+      { type: PieceType.ROOK, owner: Player.PLAYER_2, position: { row: 8, col: 8 }, hasMoved: false, id: 'p2-rook-2' }
     );
 
     return {

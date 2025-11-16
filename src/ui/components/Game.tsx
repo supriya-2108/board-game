@@ -262,6 +262,46 @@ const Game: React.FC = () => {
     particleCanvasRef.current = handle;
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // N - New Game
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        handleNewGame();
+      }
+      // R - Restart
+      else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        handleRestart();
+      }
+      // U - Undo
+      else if (e.key === 'u' || e.key === 'U') {
+        e.preventDefault();
+        handleUndo(1);
+      }
+      // Escape - Clear selection
+      else if (e.key === 'Escape') {
+        e.preventDefault();
+        setSelectedPiece(null);
+        setValidMoves([]);
+      }
+      // S - Settings
+      else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        handleOpenSettings();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameMode, difficulty, player1Name, player2Name]);
+
   return (
     <div className="game-container" ref={boardContainerRef}>
       {showProfileCreation && (

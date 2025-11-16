@@ -111,8 +111,11 @@ export class MoveValidator {
       return true;
     }
 
-    // For Bishops and Queens, check diagonal paths
-    if (piece.type === PieceType.BISHOP || piece.type === PieceType.QUEEN) {
+    // For Bishops, Rooks, Queens, and Kings, check paths
+    if (piece.type === PieceType.BISHOP || 
+        piece.type === PieceType.ROOK || 
+        piece.type === PieceType.QUEEN ||
+        piece.type === PieceType.KING) {
       return PieceLogic.isPathClear(piece.position, to, board, piece.type);
     }
 
@@ -144,7 +147,7 @@ export class MoveValidator {
       };
     }
 
-    // Knights, Bishops, and Queens can capture opponent pieces
+    // Knights, Bishops, Rooks, Queens, and Kings can capture opponent pieces
     if (pieceAtTarget.owner !== piece.owner) {
       return { valid: true };
     }

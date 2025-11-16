@@ -8,7 +8,9 @@ describe('AIEngine', () => {
       expect(AIEngine.getPieceValue(PieceType.PAWN)).toBe(10);
       expect(AIEngine.getPieceValue(PieceType.KNIGHT)).toBe(30);
       expect(AIEngine.getPieceValue(PieceType.BISHOP)).toBe(30);
-      expect(AIEngine.getPieceValue(PieceType.QUEEN)).toBe(50);
+      expect(AIEngine.getPieceValue(PieceType.ROOK)).toBe(50);
+      expect(AIEngine.getPieceValue(PieceType.QUEEN)).toBe(90);
+      expect(AIEngine.getPieceValue(PieceType.KING)).toBe(10000);
     });
   });
 
@@ -38,6 +40,7 @@ describe('AIEngine', () => {
     const mockBoard: BoardState = {
       pieces: [],
       currentPlayer: Player.PLAYER_1,
+      playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
       resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
       moveCount: 0,
       capturesSinceLastMove: 0
@@ -232,6 +235,467 @@ describe('AIEngine', () => {
       expect(ordered[2]).toBe(forwardMove);
       expect(ordered[3]).toBe(sidewaysMove);
     });
+
+    it('should prioritize King captures above all other moves', () => {
+      const kingCaptureMove = createMove(
+        { row: 2, col: 2 },
+        { row: 3, col: 3 },
+        Player.PLAYER_1,
+        PieceType.QUEEN,
+        {
+          type: PieceType.KING,
+          owner: Player.PLAYER_2,
+          position: { row: 3, col: 3 },
+          hasMoved: false,
+          id: 'king'
+        }
+      );
+      const queenCaptureMove = createMove(
+        { row: 2, col: 4 },
+        { row: 3, col: 4 },
+        Player.PLAYER_1,
+        PieceType.ROOK,
+        {
+          type: PieceType.QUEEN,
+          owner: Player.PLAYER_2,
+          position: { row: 3, col: 4 },
+          hasMoved: false,
+          id: 'queen'
+        }
+      );
+      const upgradeMove = createMove(
+        { row: 2, col: 6 },
+        { row: 3, col: 6 },
+        Player.PLAYER_1,
+        PieceType.PAWN,
+        undefined,
+        true
+      );
+
+      const ordered = AIEngine.orderMoves(
+        [upgradeMove, queenCaptureMove, kingCaptureMove],
+        mockBoard
+      );
+      
+      expect(ordered[0]).toBe(kingCaptureMove);
+      expect(ordered[1]).toBe(queenCaptureMove);
+      expect(ordered[2]).toBe(upgradeMove);
+    });
+
+    it('should prioritize higher value captures with new piece values', () => {
+      const captureQueen = createMove(
+        { row: 2, col: 2 },
+        { row: 3, col: 3 },
+        Player.PLAYER_1,
+        PieceType.KNIGHT,
+        {
+          type: PieceType.QUEEN,
+          owner: Player.PLAYER_2,
+          position: { row: 3, col: 3 },
+          hasMoved: false,
+          id: 'queen'
+        }
+      );
+      const captureRook = createMove(
+        { row: 2, col: 4 },
+        { row: 3, col: 5 },
+        Player.PLAYER_1,
+        PieceType.KNIGHT,
+        {
+          type: PieceType.ROOK,
+          owner: Player.PLAYER_2,
+          position: { row: 3, col: 5 },
+          hasMoved: false,
+          id: 'rook'
+        }
+      );
+      const captureBishop = createMove(
+        { row: 2, col: 6 },
+        { row: 3, col: 7 },
+        Player.PLAYER_1,
+        PieceType.KNIGHT,
+        {
+          type: PieceType.BISHOP,
+          owner: Player.PLAYER_2,
+          position: { row: 3, col: 7 },
+          hasMoved: false,
+          id: 'bishop'
+        }
+      );
+
+      const ordered = AIEngine.orderMoves(
+        [captureBishop, captureRook, captureQueen],
+        mockBoard
+      );
+      
+      expect(ordered[0]).toBe(captureQueen);
+      expect(ordered[1]).toBe(captureRook);
+      expect(ordered[2]).toBe(captureBishop);
+    });
+  });
+
+  describe('evaluateKingSafety', () => {
+    it('should return negative score when King is captured', () => {
+      const boardWithoutKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.PAWN,
+            owner: Player.PLAYER_1,
+            position: { row: 2, col: 1 },
+            hasMoved: false,
+            id: 'p1-pawn-1'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safety = AIEngine.evaluateKingSafety(boardWithoutKing, Player.PLAYER_1);
+      expect(safety).toBe(-10000);
+    });
+
+    it('should give bonus for King on back row for Player 1', () => {
+      const boardWithKingOnBackRow: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safety = AIEngine.evaluateKingSafety(boardWithKingOnBackRow, Player.PLAYER_1);
+      expect(safety).toBeGreaterThan(0);
+    });
+
+    it('should give bonus for King on back row for Player 2', () => {
+      const boardWithKingOnBackRow: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 5 },
+            hasMoved: false,
+            id: 'p2-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_2,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safety = AIEngine.evaluateKingSafety(boardWithKingOnBackRow, Player.PLAYER_2);
+      expect(safety).toBeGreaterThan(0);
+    });
+
+    it('should give bonus for friendly pieces near King', () => {
+      const boardWithProtectedKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 4 },
+            hasMoved: false,
+            id: 'p1-rook-1'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 6 },
+            hasMoved: false,
+            id: 'p1-rook-2'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safetyWithProtection = AIEngine.evaluateKingSafety(boardWithProtectedKing, Player.PLAYER_1);
+      
+      const boardWithExposedKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safetyWithoutProtection = AIEngine.evaluateKingSafety(boardWithExposedKing, Player.PLAYER_1);
+      
+      expect(safetyWithProtection).toBeGreaterThan(safetyWithoutProtection);
+    });
+
+    it('should give penalty for enemy pieces near King', () => {
+      const boardWithThreatenedKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          },
+          {
+            type: PieceType.QUEEN,
+            owner: Player.PLAYER_2,
+            position: { row: 3, col: 5 },
+            hasMoved: false,
+            id: 'p2-queen'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_2,
+            position: { row: 2, col: 4 },
+            hasMoved: false,
+            id: 'p2-rook'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safetyWithThreats = AIEngine.evaluateKingSafety(boardWithThreatenedKing, Player.PLAYER_1);
+      
+      const boardWithSafeKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const safetyWithoutThreats = AIEngine.evaluateKingSafety(boardWithSafeKing, Player.PLAYER_1);
+      
+      expect(safetyWithThreats).toBeLessThan(safetyWithoutThreats);
+    });
+  });
+
+  describe('evaluatePosition', () => {
+    it('should evaluate material value correctly with new piece values', () => {
+      const board: BoardState = {
+        pieces: [
+          {
+            type: PieceType.QUEEN,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 4 },
+            hasMoved: false,
+            id: 'p1-queen'
+          },
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 1 },
+            hasMoved: false,
+            id: 'p2-rook'
+          },
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 5 },
+            hasMoved: false,
+            id: 'p2-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const score = AIEngine.evaluatePosition(board, Player.PLAYER_1);
+      
+      // Player 1 has Queen (90) + King (10000) = 10090
+      // Player 2 has Rook (50) + King (10000) = 10050
+      // Material advantage: 10090 - 10050 = 40
+      // Plus King safety and mobility bonuses
+      expect(score).toBeGreaterThan(0);
+    });
+
+    it('should include King safety in position evaluation', () => {
+      const boardWithSafeKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 4 },
+            hasMoved: false,
+            id: 'p1-rook-1'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 6 },
+            hasMoved: false,
+            id: 'p1-rook-2'
+          },
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 5 },
+            hasMoved: false,
+            id: 'p2-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const scoreWithSafeKing = AIEngine.evaluatePosition(boardWithSafeKing, Player.PLAYER_1);
+      
+      const boardWithExposedKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 4, col: 5 },
+            hasMoved: true,
+            id: 'p1-king'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 1 },
+            hasMoved: false,
+            id: 'p1-rook-1'
+          },
+          {
+            type: PieceType.ROOK,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 8 },
+            hasMoved: false,
+            id: 'p1-rook-2'
+          },
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 5 },
+            hasMoved: false,
+            id: 'p2-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const scoreWithExposedKing = AIEngine.evaluatePosition(boardWithExposedKing, Player.PLAYER_1);
+      
+      expect(scoreWithSafeKing).toBeGreaterThan(scoreWithExposedKing);
+    });
+
+    it('should heavily penalize losing the King', () => {
+      const boardWithKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_1,
+            position: { row: 1, col: 5 },
+            hasMoved: false,
+            id: 'p1-king'
+          },
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 5 },
+            hasMoved: false,
+            id: 'p2-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const scoreWithKing = AIEngine.evaluatePosition(boardWithKing, Player.PLAYER_1);
+      
+      const boardWithoutKing: BoardState = {
+        pieces: [
+          {
+            type: PieceType.KING,
+            owner: Player.PLAYER_2,
+            position: { row: 8, col: 5 },
+            hasMoved: false,
+            id: 'p2-king'
+          }
+        ],
+        currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
+        resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
+        moveCount: 0,
+        capturesSinceLastMove: 0
+      };
+
+      const scoreWithoutKing = AIEngine.evaluatePosition(boardWithoutKing, Player.PLAYER_1);
+      
+      // Losing King should result in massive negative score
+      expect(scoreWithoutKing).toBeLessThan(scoreWithKing - 10000);
+    });
   });
 
   describe('getDepthForDifficulty', () => {
@@ -264,6 +728,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0
@@ -287,6 +752,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0
@@ -330,6 +796,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0
@@ -368,6 +835,7 @@ describe('AIEngine', () => {
         }
       ],
       currentPlayer: Player.PLAYER_1,
+      playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
       resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
       moveCount: 0,
       capturesSinceLastMove: 0
@@ -393,6 +861,7 @@ describe('AIEngine', () => {
       const emptyBoard: BoardState = {
         pieces: [],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0
@@ -448,6 +917,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0
@@ -526,6 +996,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 2, [Player.PLAYER_2]: 1 },
         moveCount: 10,
         capturesSinceLastMove: 3
@@ -573,6 +1044,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0
@@ -610,6 +1082,7 @@ describe('AIEngine', () => {
           }
         ],
         currentPlayer: Player.PLAYER_1,
+        playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
         resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
         moveCount: 0,
         capturesSinceLastMove: 0

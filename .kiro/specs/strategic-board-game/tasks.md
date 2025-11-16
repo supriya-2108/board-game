@@ -33,29 +33,49 @@
   - Reject moves to friendly piece positions
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 2.4 Create Queen movement rules
-  - Implement combined diagonal and forward movement
-  - Add path obstruction checking for both directions
+- [x] 2.4 Create Rook movement rules
+  - Implement horizontal and vertical movement calculation
+  - Add path obstruction checking for straight lines
+  - Implement capture logic with movement stop
+  - Validate destination is within board boundaries
+  - Reject moves to friendly piece positions
+  - _Requirements: 4.5.1, 4.5.2, 4.5.3, 4.5.4, 4.5.5_
+
+- [x] 2.5 Create Queen movement rules (starting piece)
+  - Implement combined Rook and Bishop movement (horizontal, vertical, diagonal)
+  - Add path obstruction checking for all directions
   - Implement capture logic
   - Validate destination is within board boundaries
-  - _Requirements: 2.3, 5.2_
+  - Reject moves to friendly piece positions
+  - _Requirements: 4.6.1, 4.6.2, 4.6.3, 4.6.4, 4.6.5_
 
-- [ ] 2.5 Write unit tests for piece movement
+- [x] 2.6 Create King movement rules
+  - Implement one-square movement in any direction
+  - Implement capture logic for opponent pieces
+  - Validate destination is within board boundaries
+  - Reject moves to friendly piece positions
+  - Add special handling for King capture (immediate game end)
+  - _Requirements: 4.7.1, 4.7.2, 4.7.3, 4.7.4, 4.7.5_
+
+- [ ] 2.7 Write unit tests for all piece movement
   - Test Pawn movement rules and promotion
   - Test Knight L-shape movement and jumping
   - Test Bishop diagonal movement and obstructions
+  - Test Rook horizontal/vertical movement and obstructions
   - Test Queen combined movement patterns
+  - Test King one-square movement in all directions
   - _Requirements: 12.1_
 
 - [ ] 3. Implement game state management
 - [ ] 3.1 Create BoardState initialization
   - Initialize 8x8 grid structure
-  - Place 12 pieces per player (4 Pawns, 4 Knights, 4 Bishops)
-  - Position Player 1 pieces on rows 1-2
-  - Position Player 2 pieces on rows 7-8
+  - Place 16 pieces per player (8 Pawns, 2 Knights, 2 Bishops, 2 Rooks, 1 Queen, 1 King)
+  - Position Player 1 pieces on rows 1-2 (Pawns on row 2, others on row 1)
+  - Position Player 2 pieces on rows 7-8 (Pawns on row 7, others on row 8)
+  - Arrange row 1 pieces as: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook
   - Set Player 1 as active player
   - Initialize resource points to zero for both players
-  - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
+  - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
 
 - [ ] 3.2 Implement state transition logic
   - Create immutable state update functions
@@ -137,25 +157,27 @@
 
 - [-] 6. Implement win and draw condition detection
 - [ ] 6.1 Create win condition checks
-  - Detect when player has fewer than 3 pieces
+  - Detect when player's King is captured (immediate win)
+  - Detect when player has fewer than 3 pieces (excluding King)
   - Detect when player has no valid moves
   - Declare opponent as winner
   - Prevent further moves after win
-  - _Requirements: 8.1, 8.2, 8.4_
+  - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
 - [ ] 6.2 Create draw condition check
   - Track consecutive moves without captures
   - Declare draw after 50 moves without capture
   - Prevent further moves after draw
-  - _Requirements: 8.3, 8.4_
+  - _Requirements: 8.4, 8.5_
 
 - [ ] 6.3 Implement game outcome display
   - Display win/draw message to players
   - Show final game state
   - Provide new game option
-  - _Requirements: 8.5_
+  - _Requirements: 8.6_
 
 - [ ] 6.4 Write unit tests for win/draw conditions
+  - Test King capture win condition (immediate)
   - Test piece count win condition
   - Test no valid moves win condition
   - Test 50-move draw condition
@@ -170,10 +192,11 @@
   - _Requirements: 9.2, 9.3_
 
 - [x] 7.2 Implement position evaluation heuristic
-  - Calculate material value (Pawn: 10, Knight: 30, Bishop: 30, Queen: 50)
+  - Calculate material value (Pawn: 10, Knight: 30, Bishop: 30, Rook: 50, Queen: 90, King: 10000)
   - Weight resource points (×10 multiplier)
   - Add positional bonuses for board control
   - Calculate mobility score (valid moves × 2)
+  - Prioritize King safety (infinite value)
   - _Requirements: 9.4_
 
 - [x] 7.3 Implement move ordering optimization
@@ -711,7 +734,7 @@
   - Test readability across different screen sizes
   - _Requirements: 14.1_
 
-- [-] 20. Implement responsive and accessibility features
+- [ ] 20. Implement responsive and accessibility features
 - [x] 20.1 Optimize animations for mobile devices
   - Reduce glow intensity by 50% on mobile
   - Simplify particle effects (fewer particles, shorter life)
@@ -726,14 +749,14 @@
   - Set animation durations to 0.01ms
   - _Requirements: 18.5_
 
-- [-] 20.3 Ensure keyboard navigation support
+- [x] 20.3 Ensure keyboard navigation support
   - Verify all interactive elements are focusable
   - Style focus indicators with neon glow
   - Implement keyboard shortcuts for common actions
   - Test tab order and navigation flow
   - _Requirements: 18.5_
 
-- [ ] 20.4 Add ARIA labels and semantic HTML
+- [x] 20.4 Add ARIA labels and semantic HTML
   - Add ARIA labels to all interactive elements
   - Implement live regions for game state announcements
   - Use semantic HTML elements (button, nav, main, etc.)
@@ -803,3 +826,83 @@
   - Enable code splitting if applicable
   - Test production build performance
   - _Requirements: 18.5_
+
+- [ ] 23. Implement traditional chess pieces (King, Queen, Rooks)
+- [x] 23.1 Add Rook, Queen, and King to type definitions
+  - Add ROOK, QUEEN (as starting piece), and KING to PieceType enum
+  - Update type definitions to support new pieces
+  - Update piece value constants
+  - _Requirements: 1.2, 4.5, 4.6, 4.7_
+
+- [x] 23.2 Implement Rook movement logic
+  - Create rookLogic.ts with horizontal/vertical movement
+  - Implement path obstruction checking for straight lines
+  - Add capture logic
+  - Validate moves within board boundaries
+  - _Requirements: 4.5.1, 4.5.2, 4.5.3, 4.5.4, 4.5.5_
+
+- [ ] 23.3 Implement Queen movement logic (starting piece)
+  - Create queenLogic.ts with combined Rook and Bishop movement
+  - Implement path obstruction checking for all directions
+  - Add capture logic
+  - Validate moves within board boundaries
+  - _Requirements: 4.6.1, 4.6.2, 4.6.3, 4.6.4, 4.6.5_
+
+- [x] 23.4 Implement King movement logic
+  - Create kingLogic.ts with one-square movement in any direction
+  - Add capture logic
+  - Validate moves within board boundaries
+  - Implement special King capture detection (immediate game end)
+  - _Requirements: 4.7.1, 4.7.2, 4.7.3, 4.7.4, 4.7.5_
+
+- [x] 23.5 Update board initialization for new piece layout
+  - Update gameState.ts to place 16 pieces per player
+  - Arrange back row as: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook
+  - Place 8 Pawns on row 2 (Player 1) and row 7 (Player 2)
+  - Update piece positioning logic
+  - _Requirements: 1.2, 1.3, 1.4, 1.5_
+
+- [x] 23.6 Update move validator for new pieces
+  - Integrate Rook movement validation
+  - Integrate Queen movement validation
+  - Integrate King movement validation
+  - Update path obstruction checking for new pieces
+  - _Requirements: 4.5, 4.6, 4.7_
+
+- [x] 23.7 Update win condition detection for King capture
+  - Add immediate win detection when King is captured
+  - Update piece count win condition to exclude King
+  - Ensure game ends immediately on King capture
+  - Update game status messages
+  - _Requirements: 8.1, 8.2_
+
+- [x] 23.8 Update AI evaluation for new pieces
+  - Update piece value function with Rook (50), Queen (90), King (10000)
+  - Add King safety evaluation
+  - Update move ordering to prioritize King protection
+  - Test AI behavior with new pieces
+  - _Requirements: 9.4_
+
+- [x] 23.9 Add Unicode symbols for new pieces
+  - Add Rook symbols (♜ ♖)
+  - Add Queen symbols (♛ ♕)
+  - Add King symbols (♚ ♔)
+  - Update PieceComponent to render new symbols
+  - Ensure symbols display correctly with cyberpunk styling
+  - _Requirements: 10.1_
+
+- [ ]* 23.10 Write unit tests for new pieces
+  - Test Rook horizontal and vertical movement
+  - Test Queen combined movement patterns
+  - Test King one-square movement
+  - Test King capture win condition
+  - Test AI evaluation with new pieces
+  - _Requirements: 12.1, 12.2, 12.3_
+
+- [ ] 23.11 Update UI and documentation
+  - Update move history to display new piece types
+  - Update game instructions if present
+  - Test all new pieces in PvP mode
+  - Test all new pieces with AI opponent
+  - Verify responsive behavior with new pieces
+  - _Requirements: 10.1, 10.2, 10.3_

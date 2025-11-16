@@ -63,17 +63,26 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     <div 
       className={`profile-settings-overlay ${isClosing ? 'fade-out-animation' : 'fade-in-animation'}`} 
       onClick={handleClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-settings-title"
     >
       <div 
         className={`profile-settings-modal ${isClosing ? 'modal-slide-out-animation' : 'modal-slide-in-animation'}`} 
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h2>Profile Settings</h2>
-          <button className="close-button" onClick={handleClose}>×</button>
+          <h2 id="profile-settings-title">Profile Settings</h2>
+          <button 
+            className="close-button" 
+            onClick={handleClose}
+            aria-label="Close profile settings"
+          >
+            ×
+          </button>
         </div>
 
-        <div className="profile-info">
+        <div className="profile-info" role="region" aria-label="Profile information">
           <div className="info-row">
             <span className="info-label">Display Name:</span>
             <span className="info-value">{profile.displayName}</span>
@@ -97,30 +106,42 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         </div>
 
         <div className="settings-actions">
-          <button className="action-button primary" onClick={onEditDisplayName}>
+          <button 
+            className="action-button primary" 
+            onClick={onEditDisplayName}
+            aria-label="Edit your display name"
+          >
             Edit Display Name
           </button>
           <button 
             className="action-button danger" 
             onClick={() => setShowConfirmClear(true)}
+            aria-label="Clear your profile"
           >
             Clear Profile
           </button>
         </div>
 
         {showConfirmClear && (
-          <div className="confirm-dialog">
-            <p>Are you sure you want to clear your profile? This cannot be undone.</p>
+          <div 
+            className="confirm-dialog" 
+            role="alertdialog"
+            aria-labelledby="confirm-clear-title"
+            aria-describedby="confirm-clear-description"
+          >
+            <p id="confirm-clear-description">Are you sure you want to clear your profile? This cannot be undone.</p>
             <div className="confirm-actions">
               <button 
                 className="confirm-button danger" 
                 onClick={handleClearProfile}
+                aria-label="Confirm clear profile"
               >
                 Yes, Clear Profile
               </button>
               <button 
                 className="confirm-button" 
                 onClick={() => setShowConfirmClear(false)}
+                aria-label="Cancel clear profile"
               >
                 Cancel
               </button>

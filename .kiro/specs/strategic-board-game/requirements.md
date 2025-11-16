@@ -8,11 +8,13 @@ This document specifies the requirements for a turn-based strategic board game f
 
 - **Game_System**: The complete board game application including UI, game logic, and AI
 - **Board**: An 8x8 grid containing 64 squares where pieces are positioned
-- **Piece**: A game unit that can be moved according to specific rules (Pawn, Knight, or Bishop)
+- **Piece**: A game unit that can be moved according to specific rules (Pawn, Knight, Bishop, Rook, Queen, or King)
 - **Pawn**: A piece type that moves forward 1-2 squares and promotes to Queen on row 8
 - **Knight**: A piece type that moves in an L-shape pattern and can jump over other pieces
 - **Bishop**: A piece type that moves diagonally any distance
-- **Queen**: An upgraded Pawn with enhanced movement capabilities
+- **Rook**: A piece type that moves horizontally or vertically any distance
+- **Queen**: A powerful piece that combines Rook and Bishop movement (can be upgraded from Pawn or start as initial piece)
+- **King**: The most important piece that moves one square in any direction; losing the King results in defeat
 - **Player**: A human or AI participant controlling one set of pieces
 - **Turn**: A single move action by one player before control passes to the opponent
 - **Capture**: The act of removing an opponent's piece by moving to its square
@@ -39,15 +41,17 @@ This document specifies the requirements for a turn-based strategic board game f
 
 ### Requirement 1
 
-**User Story:** As a player, I want to set up a game with 12 pieces per player on an 8x8 board, so that I can start playing immediately
+**User Story:** As a player, I want to set up a game with 16 pieces per player on an 8x8 board in traditional chess formation, so that I can start playing immediately
 
 #### Acceptance Criteria
 
 1. WHEN the game initializes, THE Game_System SHALL create a Board with 64 squares arranged in an 8x8 grid
-2. WHEN the game initializes, THE Game_System SHALL place 12 pieces for each Player consisting of 4 Pawns, 4 Knights, and 4 Bishops
-3. WHEN the game initializes, THE Game_System SHALL position Player 1 pieces on rows 1-2 and Player 2 pieces on rows 7-8
-4. WHEN the game initializes, THE Game_System SHALL set Player 1 as the active player
-5. WHEN the game initializes, THE Game_System SHALL initialize Resource_Point count to zero for both players
+2. WHEN the game initializes, THE Game_System SHALL place 16 pieces for each Player consisting of 8 Pawns, 2 Knights, 2 Bishops, 2 Rooks, 1 Queen, and 1 King
+3. WHEN the game initializes, THE Game_System SHALL position Player 1 pieces on rows 1-2 with Pawns on row 2 and other pieces on row 1
+4. WHEN the game initializes, THE Game_System SHALL position Player 2 pieces on rows 7-8 with Pawns on row 7 and other pieces on row 8
+5. WHEN the game initializes, THE Game_System SHALL arrange row 1 pieces as: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook (left to right)
+6. WHEN the game initializes, THE Game_System SHALL set Player 1 as the active player
+7. WHEN the game initializes, THE Game_System SHALL initialize Resource_Point count to zero for both players
 
 ### Requirement 2
 
@@ -83,6 +87,42 @@ This document specifies the requirements for a turn-based strategic board game f
 2. WHEN a Bishop's path contains any piece, THE Game_System SHALL restrict movement to squares before the obstruction
 3. WHEN a Bishop moves to a square occupied by an opponent piece, THE Game_System SHALL capture the opponent piece and stop movement
 4. WHEN a Bishop moves to a square occupied by a friendly piece, THE Game_System SHALL reject the move as invalid
+5. THE Game_System SHALL validate that the destination square is within the Board boundaries
+
+### Requirement 4.5
+
+**User Story:** As a player, I want to move my Rooks horizontally or vertically across any distance, so that I can control ranks and files on the board
+
+#### Acceptance Criteria
+
+1. WHEN a Rook is selected, THE Game_System SHALL allow movement to any square along horizontal or vertical lines from its current position
+2. WHEN a Rook's path contains any piece, THE Game_System SHALL restrict movement to squares before the obstruction
+3. WHEN a Rook moves to a square occupied by an opponent piece, THE Game_System SHALL capture the opponent piece and stop movement
+4. WHEN a Rook moves to a square occupied by a friendly piece, THE Game_System SHALL reject the move as invalid
+5. THE Game_System SHALL validate that the destination square is within the Board boundaries
+
+### Requirement 4.6
+
+**User Story:** As a player, I want to move my Queen in any direction across any distance, so that I can utilize the most powerful piece on the board
+
+#### Acceptance Criteria
+
+1. WHEN a Queen is selected, THE Game_System SHALL allow movement to any square along horizontal, vertical, or diagonal lines from its current position
+2. WHEN a Queen's path contains any piece, THE Game_System SHALL restrict movement to squares before the obstruction
+3. WHEN a Queen moves to a square occupied by an opponent piece, THE Game_System SHALL capture the opponent piece and stop movement
+4. WHEN a Queen moves to a square occupied by a friendly piece, THE Game_System SHALL reject the move as invalid
+5. THE Game_System SHALL validate that the destination square is within the Board boundaries
+
+### Requirement 4.7
+
+**User Story:** As a player, I want to move my King one square in any direction, so that I can protect my most important piece while maintaining mobility
+
+#### Acceptance Criteria
+
+1. WHEN a King is selected, THE Game_System SHALL allow movement to any adjacent square (horizontal, vertical, or diagonal)
+2. WHEN a King moves to a square occupied by an opponent piece, THE Game_System SHALL capture the opponent piece
+3. WHEN a King moves to a square occupied by a friendly piece, THE Game_System SHALL reject the move as invalid
+4. WHEN a King is captured, THE Game_System SHALL immediately declare the opponent as the winner
 5. THE Game_System SHALL validate that the destination square is within the Board boundaries
 
 ### Requirement 5
@@ -127,11 +167,12 @@ This document specifies the requirements for a turn-based strategic board game f
 
 #### Acceptance Criteria
 
-1. WHEN a Player has fewer than 3 pieces remaining, THE Game_System SHALL declare the opponent as the winner
-2. WHEN a Player has no valid moves available, THE Game_System SHALL declare the opponent as the winner
-3. WHEN 50 consecutive moves occur without any capture, THE Game_System SHALL declare the game as a draw
-4. WHEN a Win_Condition or Draw_Condition is met, THE Game_System SHALL prevent further moves
-5. WHEN a Win_Condition or Draw_Condition is met, THE Game_System SHALL display the game outcome to both players
+1. WHEN a Player's King is captured, THE Game_System SHALL immediately declare the opponent as the winner
+2. WHEN a Player has fewer than 3 pieces remaining (excluding the King), THE Game_System SHALL declare the opponent as the winner
+3. WHEN a Player has no valid moves available, THE Game_System SHALL declare the opponent as the winner
+4. WHEN 50 consecutive moves occur without any capture, THE Game_System SHALL declare the game as a draw
+5. WHEN a Win_Condition or Draw_Condition is met, THE Game_System SHALL prevent further moves
+6. WHEN a Win_Condition or Draw_Condition is met, THE Game_System SHALL display the game outcome to both players
 
 ### Requirement 9
 

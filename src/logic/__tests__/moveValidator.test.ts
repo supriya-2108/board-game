@@ -6,6 +6,7 @@ describe('MoveValidator', () => {
   const createEmptyBoard = (): BoardState => ({
     pieces: [],
     currentPlayer: Player.PLAYER_1,
+    playerNames: { [Player.PLAYER_1]: 'Player 1', [Player.PLAYER_2]: 'Player 2' },
     resourcePoints: { [Player.PLAYER_1]: 0, [Player.PLAYER_2]: 0 },
     moveCount: 0,
     capturesSinceLastMove: 0
@@ -235,6 +236,102 @@ describe('MoveValidator', () => {
 
       expect(result.valid).toBe(true);
     });
+
+    it('should reject invalid Rook move (not horizontal or vertical)', () => {
+      const rook = createPiece(PieceType.ROOK, 3, 3, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [rook];
+
+      const result = MoveValidator.validateMove(rook, { row: 5, col: 5 }, board);
+
+      expect(result.valid).toBe(false);
+      expect(result.error).toBe('Invalid: illegal move for piece type');
+    });
+
+    it('should allow valid Rook horizontal move', () => {
+      const rook = createPiece(PieceType.ROOK, 3, 3, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [rook];
+
+      const result = MoveValidator.validateMove(rook, { row: 3, col: 7 }, board);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('should allow valid Rook vertical move', () => {
+      const rook = createPiece(PieceType.ROOK, 3, 3, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [rook];
+
+      const result = MoveValidator.validateMove(rook, { row: 6, col: 3 }, board);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('should reject Rook move with obstructed horizontal path', () => {
+      const rook = createPiece(PieceType.ROOK, 3, 3, Player.PLAYER_1);
+      const blockingPiece = createPiece(PieceType.PAWN, 3, 5, Player.PLAYER_2);
+      const board = createEmptyBoard();
+      board.pieces = [rook, blockingPiece];
+
+      const result = MoveValidator.validateMove(rook, { row: 3, col: 7 }, board);
+
+      expect(result.valid).toBe(false);
+      expect(result.error).toBe('Invalid: illegal move for piece type');
+    });
+
+    it('should reject Rook move with obstructed vertical path', () => {
+      const rook = createPiece(PieceType.ROOK, 3, 3, Player.PLAYER_1);
+      const blockingPiece = createPiece(PieceType.PAWN, 5, 3, Player.PLAYER_2);
+      const board = createEmptyBoard();
+      board.pieces = [rook, blockingPiece];
+
+      const result = MoveValidator.validateMove(rook, { row: 7, col: 3 }, board);
+
+      expect(result.valid).toBe(false);
+      expect(result.error).toBe('Invalid: illegal move for piece type');
+    });
+
+    it('should reject invalid King move (more than one square)', () => {
+      const king = createPiece(PieceType.KING, 4, 4, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [king];
+
+      const result = MoveValidator.validateMove(king, { row: 6, col: 4 }, board);
+
+      expect(result.valid).toBe(false);
+      expect(result.error).toBe('Invalid: illegal move for piece type');
+    });
+
+    it('should allow valid King move (one square horizontal)', () => {
+      const king = createPiece(PieceType.KING, 4, 4, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [king];
+
+      const result = MoveValidator.validateMove(king, { row: 4, col: 5 }, board);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('should allow valid King move (one square vertical)', () => {
+      const king = createPiece(PieceType.KING, 4, 4, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [king];
+
+      const result = MoveValidator.validateMove(king, { row: 5, col: 4 }, board);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('should allow valid King move (one square diagonal)', () => {
+      const king = createPiece(PieceType.KING, 4, 4, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [king];
+
+      const result = MoveValidator.validateMove(king, { row: 5, col: 5 }, board);
+
+      expect(result.valid).toBe(true);
+    });
   });
 
   describe('validateMove - capture validation', () => {
@@ -270,6 +367,30 @@ describe('MoveValidator', () => {
       board.pieces = [queen, opponentPiece];
 
       const result = MoveValidator.validateMove(queen, { row: 5, col: 5 }, board);
+
+      expect(result.valid).toBe(true);
+      expect(result.move?.capturedPiece).toBeDefined();
+    });
+
+    it('should allow Rook to capture opponent piece', () => {
+      const rook = createPiece(PieceType.ROOK, 3, 3, Player.PLAYER_1);
+      const opponentPiece = createPiece(PieceType.PAWN, 3, 6, Player.PLAYER_2);
+      const board = createEmptyBoard();
+      board.pieces = [rook, opponentPiece];
+
+      const result = MoveValidator.validateMove(rook, { row: 3, col: 6 }, board);
+
+      expect(result.valid).toBe(true);
+      expect(result.move?.capturedPiece).toBeDefined();
+    });
+
+    it('should allow King to capture opponent piece', () => {
+      const king = createPiece(PieceType.KING, 4, 4, Player.PLAYER_1);
+      const opponentPiece = createPiece(PieceType.PAWN, 5, 5, Player.PLAYER_2);
+      const board = createEmptyBoard();
+      board.pieces = [king, opponentPiece];
+
+      const result = MoveValidator.validateMove(king, { row: 5, col: 5 }, board);
 
       expect(result.valid).toBe(true);
       expect(result.move?.capturedPiece).toBeDefined();
@@ -392,6 +513,75 @@ describe('MoveValidator', () => {
         { row: 6, col: 5 },
         board,
         PieceType.KNIGHT
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true for clear horizontal path (Rook)', () => {
+      const board = createEmptyBoard();
+
+      const result = MoveValidator.isPathClear(
+        { row: 3, col: 2 },
+        { row: 3, col: 6 },
+        board,
+        PieceType.ROOK
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false for obstructed horizontal path (Rook)', () => {
+      const blockingPiece = createPiece(PieceType.PAWN, 3, 4, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [blockingPiece];
+
+      const result = MoveValidator.isPathClear(
+        { row: 3, col: 2 },
+        { row: 3, col: 6 },
+        board,
+        PieceType.ROOK
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true for clear vertical path (Rook)', () => {
+      const board = createEmptyBoard();
+
+      const result = MoveValidator.isPathClear(
+        { row: 2, col: 3 },
+        { row: 6, col: 3 },
+        board,
+        PieceType.ROOK
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false for obstructed vertical path (Rook)', () => {
+      const blockingPiece = createPiece(PieceType.PAWN, 4, 3, Player.PLAYER_1);
+      const board = createEmptyBoard();
+      board.pieces = [blockingPiece];
+
+      const result = MoveValidator.isPathClear(
+        { row: 2, col: 3 },
+        { row: 6, col: 3 },
+        board,
+        PieceType.ROOK
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true for King one-square move', () => {
+      const board = createEmptyBoard();
+
+      const result = MoveValidator.isPathClear(
+        { row: 4, col: 4 },
+        { row: 5, col: 5 },
+        board,
+        PieceType.KING
       );
 
       expect(result).toBe(true);

@@ -47,6 +47,17 @@
   border: 2px solid rgba(0, 240, 255, 0.9);
 }
 
+/* Focus indicator for keyboard navigation */
+.square:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: -2px;
+  box-shadow: 
+    0 0 0 4px rgba(0, 240, 255, 0.2),
+    0 0 10px rgba(0, 240, 255, 0.5),
+    0 0 20px rgba(0, 240, 255, 0.3);
+  z-index: 1;
+}
+
 /* Valid destination squares with neon highlights */
 .square.valid-move {
   background: radial-gradient(circle at center, rgba(0, 255, 136, 0.3) 0%, transparent 70%);

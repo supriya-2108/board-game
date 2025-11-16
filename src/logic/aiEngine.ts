@@ -13,13 +13,38 @@ export class AIEngine {
         return 30;
       case PieceType.BISHOP:
         return 30;
-      case PieceType.QUEEN:
+      case PieceType.ROOK:
         return 50;
+      case PieceType.QUEEN:
+        return 90;
+      case PieceType.KING:
+        return 10000;
     }
   }
 
   static orderMoves(moves: Move[], board: BoardState): Move[] {
     return moves.sort((a, b) => {
+      // Prioritize King captures (immediate win)
+      const aIsKingCapture = a.capturedPiece?.type === PieceType.KING;
+      const bIsKingCapture = b.capturedPiece?.type === PieceType.KING;
+      
+      if (aIsKingCapture && !bIsKingCapture) return -1;
+      if (!aIsKingCapture && bIsKingCapture) return 1;
+      
+      // Prioritize King moves that improve safety
+      const aIsKingMove = a.piece.type === PieceType.KING;
+      const bIsKingMove = b.piece.type === PieceType.KING;
+      
+      if (aIsKingMove && !bIsKingMove) {
+        // King moves are important, but not more than captures
+        const bIsCapture = b.capturedPiece !== undefined;
+        if (bIsCapture && !aIsKingCapture) return 1;
+      }
+      if (!aIsKingMove && bIsKingMove) {
+        const aIsCapture = a.capturedPiece !== undefined;
+        if (aIsCapture && !bIsKingCapture) return -1;
+      }
+      
       const aIsCapture = a.capturedPiece !== undefined;
       const bIsCapture = b.capturedPiece !== undefined;
       
@@ -59,6 +84,85 @@ export class AIEngine {
     } else {
       return fromRow - toRow;
     }
+  }
+
+  static evaluateKingSafety(board: BoardState, player: Player): number {
+    // Find the player's King
+    const king = board.pieces.find(p => p.owner === player && p.type === PieceType.KING);
+    
+    if (!king) {
+      // King is captured - worst possible position
+      return -10000;
+    }
+    
+    let safetyScore = 0;
+    
+    // Bonus for King being on back rows (safer positions)
+    if (player === Player.PLAYER_1) {
+      if (king.position.row <= 2) {
+        safetyScore += 20;
+      }
+    } else {
+      if (king.position.row >= 7) {
+        safetyScore += 20;
+      }
+    }
+    
+    // Bonus for King being protected by friendly pieces nearby
+    const friendlyPiecesNearby = board.pieces.filter(p => {
+      if (p.owner !== player || p.id === king.id) return false;
+      
+      const rowDiff = Math.abs(p.position.row - king.position.row);
+      const colDiff = Math.abs(p.position.col - king.position.col);
+      
+      // Check if piece is within 2 squares of King
+      return rowDiff <= 2 && colDiff <= 2;
+    });
+    
+    safetyScore += friendlyPiecesNearby.length * 5;
+    
+    // Penalty for enemy pieces near King
+    const opponent = player === Player.PLAYER_1 ? Player.PLAYER_2 : Player.PLAYER_1;
+    const enemyPiecesNearby = board.pieces.filter(p => {
+      if (p.owner !== opponent) return false;
+      
+      const rowDiff = Math.abs(p.position.row - king.position.row);
+      const colDiff = Math.abs(p.position.col - king.position.col);
+      
+      // Check if enemy piece is within 3 squares of King
+      return rowDiff <= 3 && colDiff <= 3;
+    });
+    
+    safetyScore -= enemyPiecesNearby.length * 10;
+    
+    return safetyScore;
+  }
+
+  static evaluatePosition(board: BoardState, player: Player): number {
+    let score = 0;
+    
+    // Material value
+    for (const piece of board.pieces) {
+      const value = this.getPieceValue(piece.type);
+      score += piece.owner === player ? value : -value;
+    }
+    
+    // Resource points (weighted heavily)
+    const opponent = player === Player.PLAYER_1 ? Player.PLAYER_2 : Player.PLAYER_1;
+    score += board.resourcePoints[player] * 10;
+    score -= board.resourcePoints[opponent] * 10;
+    
+    // King safety evaluation (critical)
+    score += this.evaluateKingSafety(board, player);
+    score -= this.evaluateKingSafety(board, opponent);
+    
+    // Mobility (number of valid moves)
+    const playerMoves = this.generateMoves(board, player);
+    const opponentMoves = this.generateMoves(board, opponent);
+    score += playerMoves.length * 2;
+    score -= opponentMoves.length * 2;
+    
+    return score;
   }
 
   static generateMoves(board: BoardState, player: Player): Move[] {

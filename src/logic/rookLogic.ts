@@ -1,38 +1,26 @@
-import { Piece, Position, BoardState, PieceType, Player } from '../types';
+import { Piece, Position, BoardState, PieceType } from '../types';
 
-export class QueenLogic {
+export class RookLogic {
   /**
-   * Get valid destination positions for a Queen
-   * Queen combines Rook movement (horizontal/vertical) and Bishop movement (diagonal)
+   * Get valid destination positions for a Rook
    */
-  static getValidDestinations(queen: Piece, board: BoardState): Position[] {
-    if (queen.type !== PieceType.QUEEN) {
+  static getValidDestinations(rook: Piece, board: BoardState): Position[] {
+    if (rook.type !== PieceType.ROOK) {
       return [];
     }
 
     const validPositions: Position[] = [];
-    const { row, col } = queen.position;
+    const { row, col } = rook.position;
 
-    // Diagonal directions (like Bishop)
-    const diagonalDirections = [
-      { rowDelta: 1, colDelta: 1 },   // Up-right
-      { rowDelta: 1, colDelta: -1 },  // Up-left
-      { rowDelta: -1, colDelta: 1 },  // Down-right
-      { rowDelta: -1, colDelta: -1 }  // Down-left
-    ];
-
-    // Straight directions (like Rook)
-    const straightDirections = [
+    // Four straight directions (horizontal and vertical)
+    const directions = [
       { rowDelta: 1, colDelta: 0 },   // Up
       { rowDelta: -1, colDelta: 0 },  // Down
       { rowDelta: 0, colDelta: 1 },   // Right
       { rowDelta: 0, colDelta: -1 }   // Left
     ];
 
-    // Combine all directions (8 total)
-    const allDirections = [...diagonalDirections, ...straightDirections];
-
-    for (const direction of allDirections) {
+    for (const direction of directions) {
       let currentRow = row + direction.rowDelta;
       let currentCol = col + direction.colDelta;
 
@@ -42,7 +30,7 @@ export class QueenLogic {
 
         if (pieceAtPos) {
           // If opponent piece, can capture (but stop here)
-          if (pieceAtPos.owner !== queen.owner) {
+          if (pieceAtPos.owner !== rook.owner) {
             validPositions.push(currentPos);
           }
           // Stop in either case (friendly or opponent piece)
@@ -80,21 +68,18 @@ export class QueenLogic {
   }
 
   /**
-   * Check if path is clear between two positions
+   * Check if path is clear between two positions (horizontal or vertical only)
    */
   static isPathClear(from: Position, to: Position, board: BoardState): boolean {
     const rowDiff = to.row - from.row;
     const colDiff = to.col - from.col;
 
-    // Determine if move is diagonal, horizontal, or vertical
-    const isDiagonal = Math.abs(rowDiff) === Math.abs(colDiff) && rowDiff !== 0;
-    const isHorizontal = rowDiff === 0 && colDiff !== 0;
-    const isVertical = colDiff === 0 && rowDiff !== 0;
-
-    if (!isDiagonal && !isHorizontal && !isVertical) {
+    // Must be horizontal or vertical move
+    if (rowDiff !== 0 && colDiff !== 0) {
       return false;
     }
 
+    // Determine direction
     const rowStep = rowDiff === 0 ? 0 : (rowDiff > 0 ? 1 : -1);
     const colStep = colDiff === 0 ? 0 : (colDiff > 0 ? 1 : -1);
     const steps = Math.max(Math.abs(rowDiff), Math.abs(colDiff));
@@ -115,18 +100,18 @@ export class QueenLogic {
   }
 
   /**
-   * Check if Queen can capture at the destination
+   * Check if Rook can capture at the destination
    */
-  static canCapture(queen: Piece, target: Position, board: BoardState): boolean {
+  static canCapture(rook: Piece, target: Position, board: BoardState): boolean {
     const pieceAtTarget = this.getPieceAt(target, board);
-    return pieceAtTarget !== undefined && pieceAtTarget.owner !== queen.owner;
+    return pieceAtTarget !== undefined && pieceAtTarget.owner !== rook.owner;
   }
 
   /**
-   * Validate if a move is legal for a Queen
+   * Validate if a move is legal for a Rook
    */
-  static isValidMove(queen: Piece, to: Position, board: BoardState): boolean {
-    const validDestinations = this.getValidDestinations(queen, board);
+  static isValidMove(rook: Piece, to: Position, board: BoardState): boolean {
+    const validDestinations = this.getValidDestinations(rook, board);
     return validDestinations.some(
       pos => pos.row === to.row && pos.col === to.col
     );

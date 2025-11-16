@@ -140,8 +140,19 @@ const Board: React.FC<BoardProps> = ({
 
   return (
     <div className="board-container" style={{ position: 'relative' }}>
-      <div ref={boardRef} className={boardClassNames}>{renderBoard()}</div>
-      <ParticleCanvas ref={particleCanvasRef} className="particle-canvas" />
+      <div 
+        ref={boardRef} 
+        className={boardClassNames}
+        role="grid"
+        aria-label="Game board"
+        aria-describedby="board-description"
+      >
+        {renderBoard()}
+      </div>
+      <div id="board-description" className="sr-only">
+        An 8 by 8 game board. Use arrow keys to navigate between squares, Enter or Space to select.
+      </div>
+      <ParticleCanvas ref={particleCanvasRef} className="particle-canvas" aria-hidden="true" />
     </div>
   );
 };

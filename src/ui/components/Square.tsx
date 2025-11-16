@@ -62,6 +62,14 @@ const Square: React.FC<SquareProps> = ({
     isValidMove ? 'valid-move' : ''
   } ${isSelected ? 'selected' : ''}`;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Allow Enter or Space to activate square
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
   return (
     <div
       className={squareClass}
@@ -69,8 +77,12 @@ const Square: React.FC<SquareProps> = ({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onTouchEnd={handleTouchEnd}
+      onKeyDown={handleKeyDown}
       data-row={position.row}
       data-col={position.col}
+      tabIndex={0}
+      role="button"
+      aria-label={`Square at row ${position.row}, column ${position.col}${piece ? `, contains ${piece.type}` : ''}${isValidMove ? ', valid move' : ''}${isSelected ? ', selected' : ''}`}
     >
       {piece && (
         <PieceComponent

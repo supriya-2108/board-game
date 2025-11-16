@@ -59,25 +59,47 @@ const MoveHistory: React.FC<MoveHistoryProps> = ({
   };
 
   return (
-    <div className={`move-history ${isCollapsed ? 'collapsed' : ''}`}>
+    <aside 
+      className={`move-history ${isCollapsed ? 'collapsed' : ''}`}
+      aria-label="Move history"
+      role="complementary"
+    >
       <div className="move-history-header">
         <h3>Move History</h3>
-        <button className="collapse-button" onClick={toggleCollapse}>
+        <button 
+          className="collapse-button" 
+          onClick={toggleCollapse}
+          aria-label={isCollapsed ? 'Expand move history' : 'Collapse move history'}
+          aria-expanded={!isCollapsed}
+        >
           {isCollapsed ? '▼' : '▲'}
         </button>
       </div>
 
       {!isCollapsed && (
         <>
-          <div className="move-list">
+          <div 
+            className="move-list" 
+            role="list"
+            aria-label="List of moves"
+          >
             {moves.length === 0 ? (
-              <div className="no-moves">No moves yet</div>
+              <div className="no-moves" role="status">No moves yet</div>
             ) : (
               moves.map((move, index) => (
                 <div
                   key={index}
                   className={`move-item player-${move.piece.owner}`}
                   onClick={() => onMoveClick && onMoveClick(index)}
+                  role="listitem"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if ((e.key === 'Enter' || e.key === ' ') && onMoveClick) {
+                      e.preventDefault();
+                      onMoveClick(index);
+                    }
+                  }}
+                  aria-label={formatMove(move, index)}
                 >
                   {formatMove(move, index)}
                 </div>
@@ -86,25 +108,30 @@ const MoveHistory: React.FC<MoveHistoryProps> = ({
           </div>
 
           {moves.length > 0 && (
-            <div className="undo-controls">
+            <div className="undo-controls" role="group" aria-label="Undo controls">
               <label htmlFor="undo-count">Undo moves:</label>
               <select
                 id="undo-count"
                 value={undoCount}
                 onChange={(e) => setUndoCount(Number(e.target.value))}
+                aria-label="Select number of moves to undo"
               >
                 <option value={1}>1</option>
                 <option value={2}>2</option>
                 <option value={3}>3</option>
               </select>
-              <button onClick={handleUndo} className="undo-button">
+              <button 
+                onClick={handleUndo} 
+                className="undo-button"
+                aria-label={`Undo last ${undoCount} move${undoCount > 1 ? 's' : ''} (Keyboard shortcut: U)`}
+              >
                 Undo
               </button>
             </div>
           )}
         </>
       )}
-    </div>
+    </aside>
   );
 };
 

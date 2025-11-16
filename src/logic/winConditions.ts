@@ -1,16 +1,22 @@
-import { BoardState, GameStatus, Player } from '../types';
+import { BoardState, GameStatus, Player, PieceType } from '../types';
 import { MoveValidator } from './moveValidator';
 
 /**
  * Win and Draw Condition Detection
- * Detects win conditions (piece count, no valid moves) and draw conditions (50-move rule)
+ * Detects win conditions (King capture, piece count, no valid moves) and draw conditions (50-move rule)
  */
 export class WinConditions {
   /**
    * Check the current game status
    */
   static checkGameStatus(state: BoardState): GameStatus {
-    // Check draw condition first (50 moves without capture)
+    // Check for King capture first (immediate win condition)
+    const kingCaptureStatus = this.checkKingCapture(state);
+    if (kingCaptureStatus !== GameStatus.IN_PROGRESS) {
+      return kingCaptureStatus;
+    }
+
+    // Check draw condition (50 moves without capture)
     if (this.isDrawByFiftyMoveRule(state)) {
       return GameStatus.DRAW;
     }
@@ -19,13 +25,13 @@ export class WinConditions {
     const player1Pieces = state.pieces.filter(p => p.owner === Player.PLAYER_1);
     const player2Pieces = state.pieces.filter(p => p.owner === Player.PLAYER_2);
 
-    // Check if Player 1 has fewer than 3 pieces
-    if (player1Pieces.length < 3) {
+    // Check if Player 1 has fewer than 3 pieces (excluding King)
+    if (this.hasInsufficientPieces(state, Player.PLAYER_1)) {
       return GameStatus.PLAYER_2_WIN;
     }
 
-    // Check if Player 2 has fewer than 3 pieces
-    if (player2Pieces.length < 3) {
+    // Check if Player 2 has fewer than 3 pieces (excluding King)
+    if (this.hasInsufficientPieces(state, Player.PLAYER_2)) {
       return GameStatus.PLAYER_1_WIN;
     }
 
@@ -41,10 +47,30 @@ export class WinConditions {
   }
 
   /**
-   * Check if a player has fewer than 3 pieces
+   * Check if a King has been captured (immediate win condition)
+   */
+  static checkKingCapture(state: BoardState): GameStatus {
+    const player1HasKing = state.pieces.some(p => p.owner === Player.PLAYER_1 && p.type === PieceType.KING);
+    const player2HasKing = state.pieces.some(p => p.owner === Player.PLAYER_2 && p.type === PieceType.KING);
+
+    // If Player 1's King is captured, Player 2 wins immediately
+    if (!player1HasKing) {
+      return GameStatus.PLAYER_2_WIN;
+    }
+
+    // If Player 2's King is captured, Player 1 wins immediately
+    if (!player2HasKing) {
+      return GameStatus.PLAYER_1_WIN;
+    }
+
+    return GameStatus.IN_PROGRESS;
+  }
+
+  /**
+   * Check if a player has fewer than 3 pieces (excluding King)
    */
   static hasInsufficientPieces(state: BoardState, player: Player): boolean {
-    const playerPieces = state.pieces.filter(p => p.owner === player);
+    const playerPieces = state.pieces.filter(p => p.owner === player && p.type !== PieceType.KING);
     return playerPieces.length < 3;
   }
 
@@ -99,11 +125,15 @@ export class WinConditions {
   static getOutcomeMessage(state: BoardState): string {
     const status = this.checkGameStatus(state);
     
+    // Check if win was due to King capture
+    const kingCaptureStatus = this.checkKingCapture(state);
+    const isKingCapture = kingCaptureStatus !== GameStatus.IN_PROGRESS;
+    
     switch (status) {
       case GameStatus.PLAYER_1_WIN:
-        return 'Player 1 wins!';
+        return isKingCapture ? 'Player 1 wins by King capture!' : 'Player 1 wins!';
       case GameStatus.PLAYER_2_WIN:
-        return 'Player 2 wins!';
+        return isKingCapture ? 'Player 2 wins by King capture!' : 'Player 2 wins!';
       case GameStatus.DRAW:
         return 'Game is a draw (50 moves without capture)';
       case GameStatus.IN_PROGRESS:
