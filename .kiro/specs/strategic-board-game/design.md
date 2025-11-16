@@ -559,6 +559,213 @@ sequenceDiagram
 - Move history capped at reasonable limit (e.g., 200 moves)
 - AI search tree garbage collected after move selection
 
+## Player Profile System
+
+### Overview
+
+The player profile system allows users to create personalized profiles with custom display names that persist across game sessions. This enhances the gaming experience by replacing generic "Player 1" and "Player 2" labels with user-chosen identities.
+
+**Design Decision**: Using browser local storage provides simple persistence without requiring backend infrastructure, keeping the application fully client-side.
+
+### Data Model
+
+```typescript
+interface PlayerProfile {
+  id: string;  // UUID for unique identification
+  displayName: string;  // User-chosen name (1-20 characters)
+  createdAt: number;  // Timestamp
+  gamesPlayed?: number;  // Optional: track statistics
+  wins?: number;  // Optional: track statistics
+}
+
+interface ProfileValidationResult {
+  valid: boolean;
+  error?: string;
+}
+```
+
+### Profile Manager Interface
+
+```typescript
+interface IProfileManager {
+  createProfile(displayName: string): PlayerProfile;
+  getProfile(): PlayerProfile | null;
+  updateProfile(profile: PlayerProfile): void;
+  validateDisplayName(name: string): ProfileValidationResult;
+  hasProfile(): boolean;
+  clearProfile(): void;
+}
+```
+
+### Validation Rules
+
+**Display Name Requirements:**
+- Length: 1-20 characters
+- Allowed characters: Alphanumeric (a-z, A-Z, 0-9) and spaces
+- No leading or trailing spaces
+- No consecutive spaces
+
+**Validation Implementation:**
+```typescript
+function validateDisplayName(name: string): ProfileValidationResult {
+  const trimmed = name.trim();
+  
+  if (trimmed.length < 1) {
+    return { valid: false, error: "Display name cannot be empty" };
+  }
+  
+  if (trimmed.length > 20) {
+    return { valid: false, error: "Display name must be 20 characters or less" };
+  }
+  
+  const validPattern = /^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/;
+  if (!validPattern.test(trimmed)) {
+    return { valid: false, error: "Display name can only contain letters, numbers, and single spaces" };
+  }
+  
+  return { valid: true };
+}
+```
+
+### Storage Strategy
+
+**Local Storage Schema:**
+```typescript
+// Key: 'playerProfile'
+// Value: JSON-serialized PlayerProfile object
+{
+  "id": "uuid-v4-string",
+  "displayName": "PlayerName",
+  "createdAt": 1234567890,
+  "gamesPlayed": 0,
+  "wins": 0
+}
+```
+
+**Design Decision**: Single profile per browser simplifies implementation. Future enhancement could support multiple profiles with profile selection.
+
+### UI Flow
+
+**First-Time User Experience:**
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI
+    participant ProfileMgr as Profile Manager
+    participant Storage as Local Storage
+    
+    User->>UI: Launch game
+    UI->>ProfileMgr: hasProfile()
+    ProfileMgr->>Storage: Check for profile
+    Storage->>ProfileMgr: No profile found
+    ProfileMgr->>UI: false
+    UI->>User: Show profile creation modal
+    User->>UI: Enter display name
+    UI->>ProfileMgr: validateDisplayName()
+    ProfileMgr->>UI: Validation result
+    alt Valid
+        User->>UI: Submit
+        UI->>ProfileMgr: createProfile()
+        ProfileMgr->>Storage: Save profile
+        UI->>User: Show game interface
+    else Invalid
+        UI->>User: Show error message
+    end
+```
+
+**Returning User Experience:**
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI
+    participant ProfileMgr as Profile Manager
+    participant Storage as Local Storage
+    
+    User->>UI: Launch game
+    UI->>ProfileMgr: hasProfile()
+    ProfileMgr->>Storage: Check for profile
+    Storage->>ProfileMgr: Profile found
+    ProfileMgr->>UI: true
+    UI->>ProfileMgr: getProfile()
+    ProfileMgr->>UI: PlayerProfile
+    UI->>User: Show game interface with display name
+```
+
+### Integration with Game System
+
+**Display Name Usage:**
+- Replace "Player 1" with user's display name
+- In PvP mode: Prompt second player for display name (session-only or separate profile)
+- In AI mode: User's display name vs "AI Opponent"
+- Show display names in:
+  - Current turn indicator
+  - Move history ("John: Pawn E2→E4")
+  - Win/draw announcements ("John wins!")
+  - Resource point display
+
+**Game State Integration:**
+```typescript
+interface BoardState {
+  pieces: Piece[];
+  currentPlayer: Player;
+  playerNames: { [Player.PLAYER_1]: string; [Player.PLAYER_2]: string };
+  resourcePoints: { [Player.PLAYER_1]: number; [Player.PLAYER_2]: number };
+  moveCount: number;
+  capturesSinceLastMove: number;
+}
+```
+
+### Profile Management UI
+
+**Profile Creation Modal:**
+- Centered modal overlay
+- Input field for display name
+- Real-time validation feedback
+- Character counter (X/20)
+- Submit button (disabled until valid)
+- Cannot be dismissed without creating profile
+
+**Profile Settings (Optional Enhancement):**
+- Access via settings menu
+- Edit display name
+- View statistics (games played, wins)
+- Clear profile option with confirmation
+
+### Error Handling
+
+**Storage Errors:**
+- If local storage is unavailable (privacy mode, quota exceeded):
+  - Fall back to session-only profile (not persisted)
+  - Show warning message to user
+  - Profile lost on page refresh
+
+**Validation Errors:**
+- Display inline error messages below input field
+- Prevent submission until valid
+- Clear error on input change
+
+**Profile Load Errors:**
+- If stored profile is corrupted:
+  - Clear corrupted data
+  - Prompt user to create new profile
+  - Log error for debugging
+
+### Testing Considerations
+
+**Unit Tests:**
+- Display name validation (all edge cases)
+- Profile creation and storage
+- Profile retrieval
+- Profile update
+- Validation error messages
+
+**Integration Tests:**
+- First-time user flow
+- Returning user flow
+- Profile persistence across page reloads
+- Display name shown in game UI
+- Local storage fallback scenarios
+
 ## Future Extensibility
 
 The architecture supports potential future enhancements:
@@ -570,4 +777,7 @@ The architecture supports potential future enhancements:
 - **Custom Board Sizes**: Grid system can be parameterized
 - **Tournament Mode**: Game controller can manage multiple games
 - **Save/Load Games**: State serialization enables persistence
+- **Multiple Profiles**: Support profile switching and management
+- **Profile Statistics**: Track detailed game history and performance metrics
+- **Profile Avatars**: Add visual customization options
 

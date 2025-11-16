@@ -26,6 +26,8 @@ This document specifies the requirements for a turn-based strategic board game f
 - **Minimax_Algorithm**: A decision-making algorithm that minimizes maximum possible loss
 - **Alpha_Beta_Pruning**: An optimization technique for the minimax algorithm
 - **Difficulty_Level**: A setting that controls AI search depth (Easy: depth 4, Hard: depth 6)
+- **Player_Profile**: A user account containing display name and game preferences
+- **Display_Name**: A custom text identifier chosen by the player to represent them in the game
 
 ## Requirements
 
@@ -172,3 +174,15 @@ This document specifies the requirements for a turn-based strategic board game f
 3. THE Game_System SHALL include unit tests covering AI_Engine decision-making at both difficulty levels
 4. THE Game_System SHALL include integration tests covering UI interactions and game flow
 5. THE Game_System SHALL achieve 100 percent code coverage across all test suites
+
+### Requirement 13
+
+**User Story:** As a player, I want to create a profile and set my display name, so that I can personalize my gaming experience
+
+#### Acceptance Criteria
+
+1. WHEN a Player first launches the game, THE Game_System SHALL prompt the Player to create a Player_Profile
+2. WHEN a Player creates a profile, THE Game_System SHALL allow the Player to enter a Display_Name between 1 and 20 characters
+3. WHEN a Player enters a Display_Name, THE Game_System SHALL validate that the Display_Name contains only alphanumeric characters and spaces
+4. WHEN a Player saves their profile, THE Game_System SHALL persist the Player_Profile in local storage
+5. WHEN a game is in progress, THE Game_System SHALL display the Display_Name for each Player instead of generic labels
