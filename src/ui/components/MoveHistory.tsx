@@ -76,7 +76,7 @@ const MoveHistory: React.FC<MoveHistoryProps> = ({
               moves.map((move, index) => (
                 <div
                   key={index}
-                  className="move-item"
+                  className={`move-item player-${move.piece.owner}`}
                   onClick={() => onMoveClick && onMoveClick(index)}
                 >
                   {formatMove(move, index)}

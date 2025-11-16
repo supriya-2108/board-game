@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProfileManager } from '../../logic/profileManager';
 import './ProfileCreation.css';
 
@@ -10,6 +10,15 @@ export const ProfileCreation: React.FC<ProfileCreationProps> = ({ onProfileCreat
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const profileManager = new ProfileManager();
+
+  useEffect(() => {
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -45,8 +54,8 @@ export const ProfileCreation: React.FC<ProfileCreationProps> = ({ onProfileCreat
   const charCount = displayName.length;
 
   return (
-    <div className="profile-creation-overlay">
-      <div className="profile-creation-modal">
+    <div className="profile-creation-overlay fade-in-animation">
+      <div className="profile-creation-modal modal-slide-in-animation">
         <h2>Welcome!</h2>
         <p>Create your player profile to get started</p>
         

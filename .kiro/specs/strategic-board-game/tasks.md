@@ -434,3 +434,372 @@
   - Test edit display name flow
   - Test PvP mode with two player names
   - _Requirements: 12.4_
+
+- [x] 12. Implement cyberpunk theme foundation
+- [x] 12.1 Create cyberpunk color palette and CSS variables
+  - Define color palette CSS variables (bg-primary, bg-secondary, bg-tertiary)
+  - Define neon color variables (cyan, magenta, purple, blue)
+  - Define text color variables (primary, secondary, dim)
+  - Define player color variables (player1-color, player2-color)
+  - Define state color variables (success, warning, error)
+  - Create cyberpunk-theme.css file with all color definitions
+  - _Requirements: 14.1, 14.2_
+
+- [x] 12.2 Implement neon glow effect utilities
+  - Create CSS classes for cyan neon glow (.neon-glow-cyan)
+  - Create CSS classes for magenta neon glow (.neon-glow-magenta)
+  - Create CSS classes for purple neon glow (.neon-glow-purple)
+  - Create hover state glow intensification (.neon-glow-hover)
+  - Implement multi-layered box-shadow for authentic neon effect
+  - Add inset shadows for dimensionality
+  - _Requirements: 14.2, 14.5_
+
+- [x] 12.3 Set up animation system with keyframes
+  - Define CSS custom properties for timing functions (ease-smooth, ease-bounce, ease-snap)
+  - Create animations.css file for all keyframe definitions
+  - Set up animation utility classes
+  - Configure animation performance optimizations (transform, opacity only)
+  - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
+
+- [x] 12.4 Apply dark cyberpunk background to main layout
+  - Update body and root element backgrounds to dark theme
+  - Apply gradient backgrounds to main containers
+  - Add subtle texture or noise overlay for depth
+  - Ensure all text has sufficient contrast
+  - _Requirements: 14.1_
+
+- [x] 13. Implement board and piece cyberpunk styling
+- [x] 13.1 Style board squares with cyberpunk aesthetic
+  - Apply gradient backgrounds to board squares
+  - Add neon border lines with low opacity
+  - Implement grid line overlay with neon cyan
+  - Add radial gradient hover effect
+  - Style valid destination squares with neon highlights
+  - Style selected square with intense neon glow
+  - _Requirements: 14.3_
+
+- [x] 13.2 Apply neon glow effects to pieces
+  - Add drop-shadow filters to pieces with player colors
+  - Apply cyan glow to Player 1 pieces
+  - Apply magenta glow to Player 2 pieces
+  - Implement hover state with intensified glow (50% increase)
+  - Add scale transform on hover (1.05x)
+  - Style active/dragging state with reduced scale (0.95x)
+  - _Requirements: 14.4, 14.5_
+
+- [x] 13.3 Implement piece movement animations
+  - Create piece-move keyframe animation (300ms duration)
+  - Implement smooth position transition with scale effect
+  - Add mid-point scale increase (1.1x) for arc motion
+  - Apply ease-smooth timing function
+  - Use CSS custom properties for from/to positions
+  - _Requirements: 15.1_
+
+- [x] 13.4 Implement piece capture animations
+  - Create piece-capture keyframe animation (400ms duration)
+  - Animate opacity fade from 1 to 0
+  - Add rotation effect (0 to 360 degrees)
+  - Add scale transformation (1 to 0)
+  - Add brightness filter increase for flash effect
+  - _Requirements: 15.2_
+
+- [x] 13.5 Implement pawn promotion animations
+  - Create pawn-promotion keyframe animation (600ms duration)
+  - Implement multi-stage scale animation (1 → 1.3 → 0.8 → 1.2 → 1)
+  - Add brightness filter progression
+  - Add drop-shadow glow that intensifies and fades
+  - Apply neon color to glow effect
+  - _Requirements: 15.3_
+
+- [ ] 14. Implement particle system
+- [x] 14.1 Create particle engine core
+  - Define Particle interface (position, velocity, life, size, color, glow)
+  - Define ParticleEmitter interface (position, count, config, pattern, duration)
+  - Create ParticleSystem class with emit(), update(), render() methods
+  - Implement particle lifecycle management
+  - Set up canvas rendering context
+  - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
+
+- [x] 14.2 Implement particle physics and rendering
+  - Implement particle position updates based on velocity
+  - Implement particle life decay over time
+  - Implement particle rendering with glow effects
+  - Add opacity based on remaining life
+  - Implement particle culling when life reaches zero
+  - Optimize rendering for 60fps performance
+  - _Requirements: 16.5_
+
+- [x] 14.3 Create capture particle effect
+  - Implement burst emission pattern from capture location
+  - Configure 20-30 particles per capture
+  - Set radial outward velocity (100-200px/s)
+  - Use capturing player's color (cyan or magenta)
+  - Set particle life to 500-800ms
+  - Set particle size to 2-4px with glow
+  - _Requirements: 16.1_
+
+- [ ] 14.4 Create promotion particle effect
+  - Implement burst + upward stream emission pattern
+  - Configure 40-60 particles per promotion
+  - Set upward-biased velocity (150-250px/s)
+  - Use player color with white sparkle accents
+  - Set particle life to 800-1200ms
+  - Set particle size to 3-6px with intense glow
+  - _Requirements: 16.2_
+
+- [ ] 14.5 Create victory particle effect
+  - Implement continuous emission across board
+  - Configure 100+ particles over 3 seconds
+  - Set varied velocities (rising and falling)
+  - Use winner's color with rainbow accents
+  - Set particle life to 1000-2000ms
+  - Set particle size to 4-8px with glow
+  - _Requirements: 16.3_
+
+- [ ] 14.6 Create valid move indicator particles
+  - Implement subtle pulse at valid destination squares
+  - Configure 5-10 particles per destination
+  - Set minimal velocity with slight float
+  - Use dim cyan/magenta colors
+  - Set continuous emission while piece selected
+  - Set particle size to 1-2px
+  - _Requirements: 16.4_
+
+- [ ] 14.7 Integrate particle system with game events
+  - Connect capture events to capture particle emission
+  - Connect promotion events to promotion particle emission
+  - Connect win events to victory particle emission
+  - Connect piece selection to valid move particle emission
+  - Clear particles on piece deselection
+  - _Requirements: 16.1, 16.2, 16.3, 16.4_
+
+- [ ] 15. Implement profile settings modal with cyberpunk styling
+- [x] 15.1 Create profile settings icon
+  - Position icon in top-right corner (fixed positioning)
+  - Style with circular shape and gradient background
+  - Apply neon cyan border with glow
+  - Implement hover effect (scale 1.1x, rotate 90deg, intensified glow)
+  - Add smooth transition (0.3s ease)
+  - _Requirements: 17.1_
+
+- [x] 15.2 Style profile settings modal
+  - Create modal backdrop with blur effect (backdrop-filter: blur(10px))
+  - Apply dark semi-transparent background (rgba(10, 14, 39, 0.9))
+  - Style modal container with gradient background
+  - Add neon cyan border (2px solid)
+  - Apply multi-layered box-shadow for depth
+  - Add border-radius for rounded corners
+  - _Requirements: 17.3_
+
+- [x] 15.3 Implement modal slide-in animation
+  - Create modal-slide-in keyframe animation (250ms duration)
+  - Animate from translateY(-100%) to translateY(0)
+  - Animate opacity from 0 to 1
+  - Apply animation on modal open
+  - Create reverse animation for modal close
+  - _Requirements: 15.5, 17.2, 17.4_
+
+- [x] 15.4 Style modal content elements
+  - Style modal header with neon cyan color and text-shadow
+  - Style input fields with dark background and neon borders
+  - Implement input focus state with glow effect
+  - Style buttons with gradient backgrounds and neon borders
+  - Add button hover effects (glow, transform translateY(-2px))
+  - Style validation messages with appropriate colors
+  - _Requirements: 17.3_
+
+- [x] 15.5 Implement modal interaction behaviors
+  - Open modal on profile icon click with slide-in animation
+  - Close modal on backdrop click with slide-out animation
+  - Close modal on escape key press
+  - Preserve game state during modal interactions
+  - Prevent body scroll when modal is open
+  - _Requirements: 17.2, 17.4, 17.5_
+
+- [x] 16. Style move history sidebar with cyberpunk theme
+- [x] 16.1 Apply cyberpunk styling to sidebar container
+  - Apply gradient background (top to bottom, dark blue to darker)
+  - Add neon cyan border on right side (2px solid)
+  - Style scrollbar with cyberpunk theme
+  - Add padding and ensure proper overflow handling
+  - _Requirements: 18.3_
+
+- [x] 16.2 Style move history items
+  - Apply semi-transparent background to items
+  - Add color-coded left border (cyan for P1, magenta for P2)
+  - Implement hover effect (background intensify, glow, translateX(4px))
+  - Style active/selected item with highlighted background and glow
+  - Add smooth transitions (0.2s ease)
+  - _Requirements: 18.3_
+
+- [x] 16.3 Implement mobile collapsible sidebar
+  - Position sidebar at bottom on mobile (<768px)
+  - Set initial collapsed state (translateY to show only 60px)
+  - Add toggle handle with neon styling
+  - Implement expand/collapse animation (0.3s ease)
+  - Change border from right to top on mobile
+  - _Requirements: 18.3_
+
+- [ ] 17. Style game controls with cyberpunk theme
+- [x] 17.1 Style control panel container
+  - Apply gradient background (left to right, dark blue)
+  - Add neon cyan border with border-radius
+  - Implement flexbox layout with proper spacing
+  - Add padding and ensure responsive behavior
+  - _Requirements: 18.4_
+
+- [x] 17.2 Style control buttons
+  - Apply gradient background (cyan to purple)
+  - Add neon cyan border
+  - Implement ripple effect on click (radial gradient animation)
+  - Add hover effect (glow, translateY(-2px))
+  - Add active state (translateY(0))
+  - Style button text with proper color and weight
+  - _Requirements: 18.4_
+
+- [x] 17.3 Style difficulty selector
+  - Create segmented control with dark background
+  - Style inactive options with muted text
+  - Style active option with gradient background and glow
+  - Implement smooth transition between states
+  - Add hover effect for inactive options
+  - _Requirements: 18.4_
+
+- [x] 17.4 Style game mode toggle
+  - Apply similar styling to difficulty selector
+  - Use neon colors for active state
+  - Add smooth transitions
+  - Ensure clear visual distinction between modes
+  - _Requirements: 18.4_
+
+- [x] 18. Implement board flip animation
+- [x] 18.1 Create board-flip keyframe animation
+  - Define 3D perspective transformation (perspective(1000px))
+  - Animate rotateX from 0deg to 180deg
+  - Add mid-point at 50% with rotateX(90deg)
+  - Set duration to 500ms
+  - Apply ease-smooth timing function
+  - _Requirements: 15.4_
+
+- [x] 18.2 Integrate board flip with turn changes
+  - Trigger animation when turn switches to Player 2 in PvP mode
+  - Reverse animation when turn switches back to Player 1
+  - Maintain Player 1 orientation in AI mode
+  - Ensure pieces remain properly positioned after flip
+  - _Requirements: 15.4, 18.2_
+
+- [x] 19. Implement typography and global styling
+- [x] 19.1 Set up cyberpunk font stack
+  - Import Rajdhani and Orbitron fonts (or similar geometric sans-serif)
+  - Import Share Tech Mono for monospace elements
+  - Define CSS custom properties for font families
+  - Apply primary font to body
+  - Apply monospace font to move notation and technical elements
+  - _Requirements: 14.1_
+
+- [x] 19.2 Style headings with cyberpunk aesthetic
+  - Apply uppercase text-transform to headings
+  - Add letter-spacing (0.1em) for futuristic look
+  - Apply neon text-shadow to headings
+  - Set appropriate font weights (700 for headings)
+  - _Requirements: 14.1_
+
+- [x] 19.3 Ensure text contrast and readability
+  - Verify all text meets WCAG AA contrast standards (4.5:1)
+  - Use high-contrast text colors on dark backgrounds
+  - Avoid using neon colors for body text
+  - Test readability across different screen sizes
+  - _Requirements: 14.1_
+
+- [-] 20. Implement responsive and accessibility features
+- [x] 20.1 Optimize animations for mobile devices
+  - Reduce glow intensity by 50% on mobile
+  - Simplify particle effects (fewer particles, shorter life)
+  - Shorten animation durations on mobile
+  - Ensure touch targets are minimum 44x44px
+  - _Requirements: 18.5_
+
+- [x] 20.2 Implement reduced motion support
+  - Add prefers-reduced-motion media query
+  - Disable animations when reduced motion is preferred
+  - Hide particle system when reduced motion is preferred
+  - Set animation durations to 0.01ms
+  - _Requirements: 18.5_
+
+- [-] 20.3 Ensure keyboard navigation support
+  - Verify all interactive elements are focusable
+  - Style focus indicators with neon glow
+  - Implement keyboard shortcuts for common actions
+  - Test tab order and navigation flow
+  - _Requirements: 18.5_
+
+- [ ] 20.4 Add ARIA labels and semantic HTML
+  - Add ARIA labels to all interactive elements
+  - Implement live regions for game state announcements
+  - Use semantic HTML elements (button, nav, main, etc.)
+  - Test with screen readers
+  - _Requirements: 18.5_
+
+- [ ] 21. Performance optimization and testing
+- [ ] 21.1 Optimize animation performance
+  - Ensure animations use only transform and opacity
+  - Add will-change property to critical animated elements
+  - Use translateZ(0) to force GPU acceleration
+  - Profile animations to ensure 60fps
+  - _Requirements: 18.5_
+
+- [ ] 21.2 Optimize particle system performance
+  - Implement particle object pooling to reduce garbage collection
+  - Limit maximum active particles to 200
+  - Cull particles outside viewport
+  - Reduce particle count on mobile (50% reduction)
+  - Profile particle rendering to ensure 60fps
+  - _Requirements: 16.5_
+
+- [ ] 21.3 Test responsive behavior across devices
+  - Test on mobile devices (iOS and Android)
+  - Test on tablets
+  - Test on desktop browsers (Chrome, Firefox, Safari)
+  - Verify touch interactions work correctly
+  - Verify animations perform well on all devices
+  - _Requirements: 18.5_
+
+- [ ]* 21.4 Write tests for cyberpunk theme components
+  - Test particle system emit, update, and render methods
+  - Test animation triggers for moves, captures, promotions
+  - Test modal open/close animations
+  - Test board flip animation
+  - Test responsive layout changes
+  - _Requirements: 12.4_
+
+- [ ] 22. Final integration and polish
+- [ ] 22.1 Integrate all cyberpunk theme elements
+  - Ensure all components use cyberpunk styling
+  - Verify color palette consistency across all elements
+  - Test all animations and particle effects together
+  - Ensure smooth transitions between all states
+  - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
+
+- [ ] 22.2 Verify all existing functionality works with new theme
+  - Test board interactions (drag-and-drop, touch)
+  - Test PvP and AI modes
+  - Test move history and undo
+  - Test profile settings
+  - Test game controls (new game, restart, difficulty)
+  - Test win/draw conditions
+  - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
+
+- [ ] 22.3 Polish visual details
+  - Fine-tune glow intensities
+  - Adjust animation timings for best feel
+  - Optimize particle effect parameters
+  - Ensure consistent spacing and alignment
+  - Add any missing hover states or transitions
+  - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5_
+
+- [ ] 22.4 Create production build with optimizations
+  - Minify CSS and JavaScript
+  - Optimize asset loading
+  - Enable code splitting if applicable
+  - Test production build performance
+  - _Requirements: 18.5_

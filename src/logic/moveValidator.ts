@@ -1,5 +1,5 @@
-import { Piece, Position, BoardState, MoveResult, PieceType, Player } from '../types';
-import { PieceLogic } from './pieceLogic';
+import { Piece, Position, BoardState, MoveResult, PieceType } from '../types';
+import { PieceLogic, PawnLogic } from './pieceLogic';
 import { GameState } from './gameState';
 
 /**
@@ -59,12 +59,17 @@ export class MoveValidator {
       return captureResult;
     }
 
+    // Check for auto-promotion (Pawn reaching row 8)
+    const movedPiece = { ...piece, position: to };
+    const isAutoPromotion = piece.type === PieceType.PAWN && PawnLogic.shouldAutoPromote(movedPiece);
+
     // Move is valid - create the new state
     const move = {
       piece,
       from: { ...piece.position },
       to: { ...to },
       capturedPiece: pieceAtDestination,
+      isUpgrade: isAutoPromotion,
       timestamp: Date.now()
     };
 

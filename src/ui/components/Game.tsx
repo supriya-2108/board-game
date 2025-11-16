@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GameController } from '../../logic/gameController';
 import { GameMode, Difficulty, Position, Piece, Player, PlayerProfile } from '../../types';
 import { ProfileManager } from '../../logic/profileManager';
@@ -9,6 +9,7 @@ import ErrorTooltip from './ErrorTooltip';
 import { ProfileCreation } from './ProfileCreation';
 import { ProfileSettings } from './ProfileSettings';
 import { EditDisplayName } from './EditDisplayName';
+import { ParticleCanvasHandle } from './ParticleCanvas';
 import './Game.css';
 
 const Game: React.FC = () => {
@@ -29,6 +30,8 @@ const Game: React.FC = () => {
   const [gameMode, setGameMode] = useState<GameMode>(GameMode.PVP);
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.EASY);
   const [draggedPiece, setDraggedPiece] = useState<Piece | null>(null);
+  const particleCanvasRef = useRef<ParticleCanvasHandle | null>(null);
+  const boardContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // Check if profile exists
@@ -160,8 +163,45 @@ const Game: React.FC = () => {
   const attemptMove = (from: Position, to: Position) => {
     const result = controller.attemptMove(from, to);
     
-    if (result.valid) {
+    if (result.valid && result.move) {
+      // Emit particle effects for captures and promotions
+      if (particleCanvasRef.current && boardContainerRef.current) {
+        const boardRect = boardContainerRef.current.getBoundingClientRect();
+        const squareSize = boardRect.width / 8;
+        const shouldFlip = gameMode === GameMode.PVP && boardState.currentPlayer === Player.PLAYER_2;
+        
+        // Calculate screen position for the destination
+        const col = shouldFlip ? (8 - to.col) : (to.col - 1);
+        const row = shouldFlip ? (to.row - 1) : (8 - to.row);
+        const screenPos = {
+          x: col * squareSize + squareSize / 2,
+          y: row * squareSize + squareSize / 2,
+        };
+        
+        // Emit capture effect if piece was captured
+        if (result.move.capturedPiece) {
+          particleCanvasRef.current.emitCaptureEffect(screenPos, result.move.piece.owner);
+        }
+        
+        // Emit promotion effect if pawn was promoted
+        if (result.move.isUpgrade) {
+          particleCanvasRef.current.emitPromotionEffect(screenPos, result.move.piece.owner);
+        }
+      }
+      
       updateGameState();
+      
+      // Check for victory and emit victory effect
+      const newStatus = controller.getGameStatus();
+      if (newStatus !== 'IN_PROGRESS' && particleCanvasRef.current) {
+        const winner = newStatus === 'PLAYER_1_WIN' ? Player.PLAYER_1 : 
+                      newStatus === 'PLAYER_2_WIN' ? Player.PLAYER_2 : null;
+        if (winner) {
+          setTimeout(() => {
+            particleCanvasRef.current?.emitVictoryEffect(winner);
+          }, 500);
+        }
+      }
     } else {
       setErrorMessage(result.error || 'Invalid move');
     }
@@ -218,8 +258,12 @@ const Game: React.FC = () => {
 
   const shouldFlipBoard = gameMode === GameMode.PVP && boardState.currentPlayer === Player.PLAYER_2;
 
+  const handleParticleCanvasReady = (handle: ParticleCanvasHandle) => {
+    particleCanvasRef.current = handle;
+  };
+
   return (
-    <div className="game-container">
+    <div className="game-container" ref={boardContainerRef}>
       {showProfileCreation && (
         <ProfileCreation onProfileCreated={handleProfileCreated} />
       )}
@@ -270,6 +314,7 @@ const Game: React.FC = () => {
             selectedPiece={selectedPiece}
             validMoves={validMoves}
             flipBoard={shouldFlipBoard}
+            onParticleCanvasReady={handleParticleCanvasReady}
           />
         </main>
 

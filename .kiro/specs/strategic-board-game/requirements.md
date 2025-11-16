@@ -28,6 +28,12 @@ This document specifies the requirements for a turn-based strategic board game f
 - **Difficulty_Level**: A setting that controls AI search depth (Easy: depth 4, Hard: depth 6)
 - **Player_Profile**: A user account containing display name and game preferences
 - **Display_Name**: A custom text identifier chosen by the player to represent them in the game
+- **Cyberpunk_Theme**: A dark visual aesthetic featuring neon colors, glows, and futuristic styling
+- **Neon_Glow**: A visual effect that creates luminous halos around UI elements using bright colors
+- **Particle_Effect**: Animated visual elements that enhance user interactions and game events
+- **Animation_Transition**: Smooth visual changes between UI states with defined duration and easing
+- **Profile_Settings_Modal**: A popup interface for managing player profile and preferences
+- **Profile_Settings_Icon**: A clickable UI element that opens the Profile_Settings_Modal
 
 ## Requirements
 
@@ -189,3 +195,63 @@ This document specifies the requirements for a turn-based strategic board game f
 6. WHEN a Player accesses profile settings, THE Game_System SHALL allow the Player to edit their Display_Name
 7. WHEN a Player updates their Display_Name, THE Game_System SHALL validate the new name using the same validation rules
 8. WHEN a Player saves an updated Display_Name, THE Game_System SHALL persist the changes to local storage
+
+### Requirement 14
+
+**User Story:** As a player, I want a dark cyberpunk-themed interface with neon glows, so that I have an immersive high-end gaming experience
+
+#### Acceptance Criteria
+
+1. WHEN the game loads, THE Game_System SHALL apply a Cyberpunk_Theme with a dark background color scheme
+2. WHEN UI elements are rendered, THE Game_System SHALL apply Neon_Glow effects using cyan, magenta, and purple accent colors
+3. WHEN the Board is displayed, THE Game_System SHALL render squares with subtle grid lines and neon borders
+4. WHEN pieces are displayed, THE Game_System SHALL apply Neon_Glow effects that distinguish player colors
+5. WHEN interactive elements are hovered, THE Game_System SHALL intensify the Neon_Glow effect by 50 percent
+
+### Requirement 15
+
+**User Story:** As a player, I want smooth animations for all game actions, so that the interface feels polished and responsive
+
+#### Acceptance Criteria
+
+1. WHEN a piece is moved, THE Game_System SHALL animate the piece position with an Animation_Transition lasting 300 milliseconds
+2. WHEN a piece is captured, THE Game_System SHALL animate the piece fading out with an Animation_Transition lasting 400 milliseconds
+3. WHEN a Pawn is promoted, THE Game_System SHALL animate the transformation with a scale and glow effect lasting 600 milliseconds
+4. WHEN the Board flips for Player 2, THE Game_System SHALL animate the rotation with an Animation_Transition lasting 500 milliseconds
+5. WHEN UI panels open or close, THE Game_System SHALL animate the transition with slide and fade effects lasting 250 milliseconds
+
+### Requirement 16
+
+**User Story:** As a player, I want particle effects during key game events, so that important moments feel impactful and exciting
+
+#### Acceptance Criteria
+
+1. WHEN a piece is captured, THE Game_System SHALL emit Particle_Effects from the capture location with neon colors
+2. WHEN a Pawn is promoted to Queen, THE Game_System SHALL emit burst Particle_Effects around the promoted piece
+3. WHEN a Player wins the game, THE Game_System SHALL emit celebratory Particle_Effects across the Board
+4. WHEN a piece is selected, THE Game_System SHALL emit subtle pulse Particle_Effects around valid move destinations
+5. THE Game_System SHALL render all Particle_Effects with smooth animation lasting between 500 and 1500 milliseconds
+
+### Requirement 17
+
+**User Story:** As a player, I want to access my profile settings through an icon and modal, so that I can manage my preferences without disrupting gameplay
+
+#### Acceptance Criteria
+
+1. WHEN the game interface loads, THE Game_System SHALL display a Profile_Settings_Icon in the top corner with Neon_Glow styling
+2. WHEN a Player clicks the Profile_Settings_Icon, THE Game_System SHALL open the Profile_Settings_Modal with a slide-in animation
+3. WHEN the Profile_Settings_Modal is open, THE Game_System SHALL display the modal with Cyberpunk_Theme styling and backdrop blur
+4. WHEN a Player clicks outside the Profile_Settings_Modal, THE Game_System SHALL close the modal with a slide-out animation
+5. WHEN the Profile_Settings_Modal closes, THE Game_System SHALL preserve the current game state without interruption
+
+### Requirement 18
+
+**User Story:** As a player, I want all existing functionality to work seamlessly with the new theme, so that I retain full game capabilities
+
+#### Acceptance Criteria
+
+1. WHEN the Cyberpunk_Theme is applied, THE Game_System SHALL maintain all Board interaction functionality
+2. WHEN the Cyberpunk_Theme is applied, THE Game_System SHALL maintain all PvP and AI mode functionality
+3. WHEN the Cyberpunk_Theme is applied, THE Game_System SHALL maintain the Move_History sidebar with themed styling
+4. WHEN the Cyberpunk_Theme is applied, THE Game_System SHALL maintain all game controls with themed styling
+5. WHEN the Cyberpunk_Theme is applied, THE Game_System SHALL maintain responsive behavior across all device sizes

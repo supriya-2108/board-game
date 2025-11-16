@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProfileManager } from '../../logic/profileManager';
 import './EditDisplayName.css';
 
@@ -16,7 +16,34 @@ export const EditDisplayName: React.FC<EditDisplayNameProps> = ({
   const [displayName, setDisplayName] = useState(currentName);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const profileManager = new ProfileManager();
+
+  useEffect(() => {
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Handle escape key press
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 250); // Match animation duration
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -46,7 +73,7 @@ export const EditDisplayName: React.FC<EditDisplayNameProps> = ({
       setShowSuccess(true);
       onSave(displayName);
       setTimeout(() => {
-        onClose();
+        handleClose();
       }, 1500);
     } else {
       setError(result.error || 'Failed to update display name');
@@ -57,11 +84,17 @@ export const EditDisplayName: React.FC<EditDisplayNameProps> = ({
   const charCount = displayName.length;
 
   return (
-    <div className="edit-display-name-overlay" onClick={onClose}>
-      <div className="edit-display-name-modal" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className={`edit-display-name-overlay ${isClosing ? 'fade-out-animation' : 'fade-in-animation'}`} 
+      onClick={handleClose}
+    >
+      <div 
+        className={`edit-display-name-modal ${isClosing ? 'modal-slide-out-animation' : 'modal-slide-in-animation'}`} 
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2>Edit Display Name</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={handleClose}>×</button>
         </div>
         
         <form onSubmit={handleSubmit}>
@@ -96,7 +129,7 @@ export const EditDisplayName: React.FC<EditDisplayNameProps> = ({
             <button 
               type="button" 
               className="cancel-button"
-              onClick={onClose}
+              onClick={handleClose}
             >
               Cancel
             </button>

@@ -71,28 +71,40 @@ const GameControls: React.FC<GameControlsProps> = ({
       </div>
 
       <div className="control-group">
-        <label htmlFor="game-mode">Game Mode:</label>
-        <select
-          id="game-mode"
-          value={gameMode}
-          onChange={(e) => onModeChange(e.target.value as GameMode)}
-        >
-          <option value={GameMode.PVP}>Player vs Player</option>
-          <option value={GameMode.AI}>Player vs AI</option>
-        </select>
+        <label>Game Mode:</label>
+        <div className="segmented-control">
+          <button
+            className={`segmented-option ${gameMode === GameMode.PVP ? 'active' : ''}`}
+            onClick={() => onModeChange(GameMode.PVP)}
+          >
+            PvP
+          </button>
+          <button
+            className={`segmented-option ${gameMode === GameMode.AI ? 'active' : ''}`}
+            onClick={() => onModeChange(GameMode.AI)}
+          >
+            vs AI
+          </button>
+        </div>
       </div>
 
       {gameMode === GameMode.AI && (
         <div className="control-group">
-          <label htmlFor="difficulty">Difficulty:</label>
-          <select
-            id="difficulty"
-            value={difficulty}
-            onChange={(e) => onDifficultyChange(e.target.value as Difficulty)}
-          >
-            <option value={Difficulty.EASY}>Easy</option>
-            <option value={Difficulty.HARD}>Hard</option>
-          </select>
+          <label>Difficulty:</label>
+          <div className="segmented-control">
+            <button
+              className={`segmented-option ${difficulty === Difficulty.EASY ? 'active' : ''}`}
+              onClick={() => onDifficultyChange(Difficulty.EASY)}
+            >
+              Easy
+            </button>
+            <button
+              className={`segmented-option ${difficulty === Difficulty.HARD ? 'active' : ''}`}
+              onClick={() => onDifficultyChange(Difficulty.HARD)}
+            >
+              Hard
+            </button>
+          </div>
         </div>
       )}
 

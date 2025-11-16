@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProfileManager } from '../../logic/profileManager';
 import { PlayerProfile } from '../../types';
 import './ProfileSettings.css';
@@ -17,13 +17,42 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   onEditDisplayName,
 }) => {
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const profileManager = new ProfileManager();
+
+  useEffect(() => {
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Handle escape key press
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 250); // Match animation duration
+  };
 
   const handleClearProfile = () => {
     profileManager.clearProfile();
-    onClose();
-    // Reload page to show profile creation
-    window.location.reload();
+    handleClose();
+    // Reload page to show profile creation after animation
+    setTimeout(() => {
+      window.location.reload();
+    }, 250);
   };
 
   const formatDate = (timestamp: number): string => {
@@ -31,11 +60,17 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   };
 
   return (
-    <div className="profile-settings-overlay" onClick={onClose}>
-      <div className="profile-settings-modal" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className={`profile-settings-overlay ${isClosing ? 'fade-out-animation' : 'fade-in-animation'}`} 
+      onClick={handleClose}
+    >
+      <div 
+        className={`profile-settings-modal ${isClosing ? 'modal-slide-out-animation' : 'modal-slide-in-animation'}`} 
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2>Profile Settings</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={handleClose}>×</button>
         </div>
 
         <div className="profile-info">

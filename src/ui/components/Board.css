@@ -8,12 +8,56 @@
 .board {
   display: flex;
   flex-direction: column;
-  border: 2px solid #333;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(0, 240, 255, 0.4);
+  box-shadow: 
+    0 0 10px rgba(0, 240, 255, 0.3),
+    0 0 20px rgba(0, 240, 255, 0.2),
+    0 4px 6px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* Apply animation when flipping */
+.board.animating-flip {
+  animation: board-flip 500ms var(--ease-smooth);
+}
+
+.board.animating-flip-reverse {
+  animation: board-flip-reverse 500ms var(--ease-smooth);
+}
+
+/* Grid line overlay with neon cyan */
+.board::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent calc(100% / 8 - 1px),
+      rgba(0, 240, 255, 0.15) calc(100% / 8 - 1px),
+      rgba(0, 240, 255, 0.15) calc(100% / 8)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent calc(100% / 8 - 1px),
+      rgba(0, 240, 255, 0.15) calc(100% / 8 - 1px),
+      rgba(0, 240, 255, 0.15) calc(100% / 8)
+    );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .board-row {
   display: flex;
+  position: relative;
+  z-index: 2;
 }
 
 /* Mobile-first: smaller board */

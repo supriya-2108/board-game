@@ -6,24 +6,54 @@
   align-items: center;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s var(--ease-smooth);
+  border: 1px solid rgba(0, 240, 255, 0.1);
 }
 
 .square.light {
-  background-color: #f0d9b5;
+  background: linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 43, 74, 0.6) 100%);
 }
 
 .square.dark {
-  background-color: #b58863;
+  background: linear-gradient(135deg, rgba(10, 14, 39, 0.8) 0%, rgba(26, 31, 58, 0.8) 100%);
 }
 
+/* Radial gradient hover effect */
+.square:hover {
+  background: radial-gradient(circle at center, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.square.light:hover {
+  background: 
+    radial-gradient(circle at center, rgba(0, 240, 255, 0.2) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(26, 31, 58, 0.6) 0%, rgba(37, 43, 74, 0.6) 100%);
+}
+
+.square.dark:hover {
+  background: 
+    radial-gradient(circle at center, rgba(0, 240, 255, 0.2) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(10, 14, 39, 0.8) 0%, rgba(26, 31, 58, 0.8) 100%);
+}
+
+/* Selected square with intense neon glow */
 .square.selected {
-  background-color: #7fc97f;
-  box-shadow: inset 0 0 0 3px #4a9;
+  background: radial-gradient(circle at center, rgba(0, 240, 255, 0.4) 0%, rgba(0, 240, 255, 0.1) 100%);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 240, 255, 0.6),
+    inset 0 0 30px rgba(0, 240, 255, 0.4),
+    0 0 15px rgba(0, 240, 255, 0.8),
+    0 0 25px rgba(0, 240, 255, 0.5);
+  border: 2px solid rgba(0, 240, 255, 0.9);
 }
 
+/* Valid destination squares with neon highlights */
 .square.valid-move {
-  background-color: rgba(127, 201, 127, 0.4);
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.3) 0%, transparent 70%);
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 
+    inset 0 0 10px rgba(0, 255, 136, 0.3),
+    0 0 10px rgba(0, 255, 136, 0.4);
 }
 
 .square.valid-move::after {
@@ -32,7 +62,15 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.2);
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.6) 0%, transparent 100%);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.square.valid-move:hover {
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.5) 0%, transparent 70%);
+  box-shadow: 
+    inset 0 0 15px rgba(0, 255, 136, 0.4),
+    0 0 15px rgba(0, 255, 136, 0.6);
 }
 
 .move-indicator {
@@ -40,19 +78,25 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.3);
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.8) 0%, rgba(0, 255, 136, 0.3) 100%);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
 }
 
-/* Mobile: smaller squares */
+/* Mobile: ensure minimum 44x44px touch targets */
 @media (max-width: 767px) {
   .square {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
   
   .move-indicator {
     width: 8px;
     height: 8px;
+  }
+  
+  .square.valid-move::after {
+    width: 16px;
+    height: 16px;
   }
 }
 

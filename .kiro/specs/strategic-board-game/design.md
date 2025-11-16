@@ -780,6 +780,821 @@ interface BoardState {
 - Display name shown in game UI
 - Local storage fallback scenarios
 
+## Cyberpunk Theme Design
+
+### Overview
+
+The cyberpunk theme transforms the game interface into a high-end gaming experience with dark aesthetics, neon glows, particle effects, and smooth animations. This enhancement maintains all existing functionality while elevating the visual presentation to create an immersive, futuristic atmosphere.
+
+**Design Philosophy:**
+- Dark backgrounds with high contrast neon accents
+- Smooth, purposeful animations that enhance rather than distract
+- Particle effects for key moments to create impact
+- Consistent cyberpunk aesthetic across all UI elements
+- Performance-optimized visual effects
+
+### Color Palette
+
+**Primary Colors:**
+```css
+--bg-primary: #0a0e27;        /* Deep space blue-black */
+--bg-secondary: #1a1f3a;      /* Slightly lighter panel background */
+--bg-tertiary: #252b4a;       /* Elevated element background */
+
+--neon-cyan: #00f0ff;         /* Primary neon accent */
+--neon-magenta: #ff00ff;      /* Secondary neon accent */
+--neon-purple: #b000ff;       /* Tertiary neon accent */
+--neon-blue: #0080ff;         /* Quaternary neon accent */
+
+--text-primary: #e0e6ff;      /* High contrast text */
+--text-secondary: #8892b0;    /* Muted text */
+--text-dim: #4a5578;          /* Very muted text */
+
+--player1-color: #00f0ff;     /* Cyan for Player 1 */
+--player2-color: #ff00ff;     /* Magenta for Player 2 */
+
+--success: #00ff88;           /* Success states */
+--warning: #ffaa00;           /* Warning states */
+--error: #ff0055;             /* Error states */
+```
+
+**Design Decision**: Cyan and magenta provide strong contrast for player differentiation while maintaining the cyberpunk aesthetic. Purple and blue serve as neutral accents.
+
+### Neon Glow Effects
+
+**CSS Implementation:**
+```css
+.neon-glow-cyan {
+  box-shadow: 
+    0 0 5px rgba(0, 240, 255, 0.5),
+    0 0 10px rgba(0, 240, 255, 0.3),
+    0 0 20px rgba(0, 240, 255, 0.2),
+    inset 0 0 10px rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.6);
+}
+
+.neon-glow-magenta {
+  box-shadow: 
+    0 0 5px rgba(255, 0, 255, 0.5),
+    0 0 10px rgba(255, 0, 255, 0.3),
+    0 0 20px rgba(255, 0, 255, 0.2),
+    inset 0 0 10px rgba(255, 0, 255, 0.1);
+  border: 1px solid rgba(255, 0, 255, 0.6);
+}
+
+.neon-glow-hover {
+  transition: all 0.3s ease;
+}
+
+.neon-glow-hover:hover {
+  box-shadow: 
+    0 0 8px rgba(0, 240, 255, 0.7),
+    0 0 15px rgba(0, 240, 255, 0.5),
+    0 0 30px rgba(0, 240, 255, 0.3),
+    inset 0 0 15px rgba(0, 240, 255, 0.2);
+  filter: brightness(1.2);
+}
+```
+
+**Glow Intensity Levels:**
+- **Subtle**: Background elements, inactive states (20% opacity)
+- **Normal**: Active elements, pieces, borders (40-60% opacity)
+- **Intense**: Hover states, selected elements (70-100% opacity)
+- **Pulsing**: Animated glow for attention-grabbing elements
+
+**Design Decision**: Multi-layered box shadows create depth and authentic neon tube appearance. Inset shadows add dimensionality.
+
+### Animation System
+
+**Animation Timing Functions:**
+```css
+--ease-smooth: cubic-bezier(0.4, 0.0, 0.2, 1);
+--ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+--ease-snap: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+```
+
+**Core Animations:**
+
+**1. Piece Movement (300ms)**
+```css
+@keyframes piece-move {
+  0% {
+    transform: translate(var(--from-x), var(--from-y)) scale(1);
+  }
+  50% {
+    transform: translate(
+      calc((var(--from-x) + var(--to-x)) / 2),
+      calc((var(--from-y) + var(--to-y)) / 2)
+    ) scale(1.1);
+  }
+  100% {
+    transform: translate(var(--to-x), var(--to-y)) scale(1);
+  }
+}
+```
+
+**2. Piece Capture (400ms)**
+```css
+@keyframes piece-capture {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2) rotate(180deg);
+    filter: brightness(2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(360deg);
+    filter: brightness(0);
+  }
+}
+```
+
+**3. Pawn Promotion (600ms)**
+```css
+@keyframes pawn-promotion {
+  0% {
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 0 transparent);
+  }
+  25% {
+    transform: scale(1.3);
+    filter: brightness(2) drop-shadow(0 0 20px var(--neon-cyan));
+  }
+  50% {
+    transform: scale(0.8);
+    filter: brightness(3) drop-shadow(0 0 30px var(--neon-cyan));
+  }
+  75% {
+    transform: scale(1.2);
+    filter: brightness(2) drop-shadow(0 0 20px var(--neon-cyan));
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1.5) drop-shadow(0 0 10px var(--neon-cyan));
+  }
+}
+```
+
+**4. Board Flip (500ms)**
+```css
+@keyframes board-flip {
+  0% {
+    transform: perspective(1000px) rotateX(0deg);
+  }
+  50% {
+    transform: perspective(1000px) rotateX(90deg);
+  }
+  100% {
+    transform: perspective(1000px) rotateX(180deg);
+  }
+}
+```
+
+**5. Modal Slide-In (250ms)**
+```css
+@keyframes modal-slide-in {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+```
+
+**6. Glow Pulse (2s, infinite)**
+```css
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--neon-color);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--neon-color), 0 0 30px var(--neon-color);
+  }
+}
+```
+
+**Design Decision**: Animation durations are calibrated to feel responsive without being jarring. Easing functions create natural, physics-inspired motion.
+
+### Particle System
+
+**Particle Engine Architecture:**
+```typescript
+interface Particle {
+  id: string;
+  x: number;
+  y: number;
+  vx: number;  // Velocity X
+  vy: number;  // Velocity Y
+  life: number;  // 0-1, decreases over time
+  maxLife: number;  // Duration in ms
+  size: number;
+  color: string;
+  glow: boolean;
+}
+
+interface ParticleEmitter {
+  position: { x: number; y: number };
+  particleCount: number;
+  particleConfig: Partial<Particle>;
+  emissionPattern: 'burst' | 'continuous' | 'directional';
+  duration: number;
+}
+
+class ParticleSystem {
+  private particles: Particle[] = [];
+  private emitters: ParticleEmitter[] = [];
+  
+  emit(emitter: ParticleEmitter): void;
+  update(deltaTime: number): void;
+  render(ctx: CanvasRenderingContext2D): void;
+  clear(): void;
+}
+```
+
+**Particle Effects:**
+
+**1. Capture Effect**
+- **Trigger**: When piece is captured
+- **Pattern**: Burst from capture location
+- **Particles**: 20-30 particles
+- **Colors**: Capturing player's color (cyan or magenta)
+- **Velocity**: Radial outward, 100-200px/s
+- **Life**: 500-800ms
+- **Size**: 2-4px with glow
+- **Behavior**: Fade out and slow down over lifetime
+
+**2. Promotion Effect**
+- **Trigger**: When Pawn promotes to Queen
+- **Pattern**: Burst + upward stream
+- **Particles**: 40-60 particles
+- **Colors**: Player's color with white sparkles
+- **Velocity**: Upward bias, 150-250px/s
+- **Life**: 800-1200ms
+- **Size**: 3-6px with intense glow
+- **Behavior**: Rise and fade, some particles linger
+
+**3. Victory Effect**
+- **Trigger**: When player wins
+- **Pattern**: Continuous emission across board
+- **Particles**: 100+ particles over 3 seconds
+- **Colors**: Winner's color with rainbow accents
+- **Velocity**: Varied, some rising, some falling
+- **Life**: 1000-2000ms
+- **Size**: 4-8px with glow
+- **Behavior**: Celebratory cascade effect
+
+**4. Valid Move Indicators**
+- **Trigger**: When piece is selected
+- **Pattern**: Subtle pulse at valid destinations
+- **Particles**: 5-10 particles per destination
+- **Colors**: Dim cyan/magenta
+- **Velocity**: Minimal, slight float
+- **Life**: Continuous while piece selected
+- **Size**: 1-2px
+- **Behavior**: Gentle pulse and float
+
+**Canvas Rendering:**
+```typescript
+function renderParticle(ctx: CanvasRenderingContext2D, particle: Particle): void {
+  ctx.save();
+  
+  // Apply glow effect
+  if (particle.glow) {
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = particle.color;
+  }
+  
+  // Set opacity based on life
+  ctx.globalAlpha = particle.life;
+  
+  // Draw particle
+  ctx.fillStyle = particle.color;
+  ctx.beginPath();
+  ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.restore();
+}
+```
+
+**Design Decision**: Canvas-based particle system provides smooth 60fps rendering without DOM overhead. Particle count is limited to maintain performance on mobile devices.
+
+### Board Styling
+
+**Square Design:**
+```css
+.board-square {
+  background: linear-gradient(135deg, #1a1f3a 0%, #252b4a 100%);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.board-square::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 60%, rgba(0, 240, 255, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.board-square:hover::before {
+  opacity: 1;
+}
+
+.board-square.valid-destination {
+  border-color: rgba(0, 240, 255, 0.6);
+  background: linear-gradient(135deg, #1a1f3a 0%, rgba(0, 240, 255, 0.1) 100%);
+}
+
+.board-square.selected {
+  border-color: rgba(0, 240, 255, 1);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 10px rgba(0, 240, 255, 0.5);
+}
+```
+
+**Piece Styling:**
+```css
+.piece {
+  filter: drop-shadow(0 0 8px var(--player-color));
+  transition: all 0.3s ease;
+  cursor: grab;
+}
+
+.piece:hover {
+  filter: drop-shadow(0 0 15px var(--player-color)) brightness(1.2);
+  transform: scale(1.05);
+}
+
+.piece:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.piece.player1 {
+  --player-color: var(--neon-cyan);
+}
+
+.piece.player2 {
+  --player-color: var(--neon-magenta);
+}
+```
+
+**Grid Lines:**
+```css
+.board-container {
+  background: 
+    linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+  background-size: calc(100% / 8) calc(100% / 8);
+}
+```
+
+**Design Decision**: Gradient backgrounds and subtle grid lines create depth. Glow effects on hover provide clear interaction feedback.
+
+### Profile Settings Modal
+
+**Modal Structure:**
+```typescript
+interface ProfileModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  profile: PlayerProfile;
+  onSave: (profile: PlayerProfile) => void;
+}
+```
+
+**Modal Styling:**
+```css
+.profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 39, 0.9);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fade-in 0.25s ease;
+}
+
+.profile-modal {
+  background: linear-gradient(135deg, #1a1f3a 0%, #252b4a 100%);
+  border: 2px solid rgba(0, 240, 255, 0.5);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 40px rgba(0, 240, 255, 0.1),
+    inset 0 0 20px rgba(0, 240, 255, 0.05);
+  animation: modal-slide-in 0.25s ease;
+}
+
+.profile-modal-header {
+  color: var(--neon-cyan);
+  font-size: 24px;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  margin-bottom: 24px;
+}
+
+.profile-input {
+  background: rgba(10, 14, 39, 0.6);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: 16px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.profile-button {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(0, 240, 255, 0.1) 100%);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 6px;
+  padding: 12px 24px;
+  color: var(--neon-cyan);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.profile-button:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.3) 0%, rgba(0, 240, 255, 0.2) 100%);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  transform: translateY(-2px);
+}
+```
+
+**Profile Settings Icon:**
+```css
+.profile-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(176, 0, 255, 0.2) 100%);
+  border: 2px solid var(--neon-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.profile-icon:hover {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+  transform: scale(1.1) rotate(90deg);
+}
+```
+
+**Design Decision**: Modal uses backdrop blur for depth separation. Slide-in animation creates smooth entrance. Icon placement in top-right follows common UI patterns.
+
+### Move History Sidebar
+
+**Sidebar Styling:**
+```css
+.move-history-sidebar {
+  background: linear-gradient(180deg, #1a1f3a 0%, #0a0e27 100%);
+  border-right: 2px solid rgba(0, 240, 255, 0.3);
+  padding: 20px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.move-history-item {
+  background: rgba(37, 43, 74, 0.5);
+  border-left: 3px solid transparent;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.move-history-item.player1 {
+  border-left-color: var(--neon-cyan);
+}
+
+.move-history-item.player2 {
+  border-left-color: var(--neon-magenta);
+}
+
+.move-history-item:hover {
+  background: rgba(37, 43, 74, 0.8);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+  transform: translateX(4px);
+}
+
+.move-history-item.active {
+  background: rgba(0, 240, 255, 0.1);
+  border-left-width: 5px;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+```
+
+**Mobile Collapsible:**
+```css
+@media (max-width: 768px) {
+  .move-history-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-top: 2px solid rgba(0, 240, 255, 0.3);
+    transform: translateY(calc(100% - 60px));
+    transition: transform 0.3s ease;
+  }
+  
+  .move-history-sidebar.expanded {
+    transform: translateY(0);
+  }
+  
+  .move-history-toggle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background: var(--neon-cyan);
+    border-radius: 3px;
+    margin-top: 8px;
+  }
+}
+```
+
+**Design Decision**: Color-coded borders distinguish players. Hover effects provide clear interaction feedback. Mobile version collapses to save screen space.
+
+### Game Controls
+
+**Control Panel Styling:**
+```css
+.game-controls {
+  background: linear-gradient(90deg, #1a1f3a 0%, #252b4a 50%, #1a1f3a 100%);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-button {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(176, 0, 255, 0.15) 100%);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 6px;
+  padding: 10px 20px;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  border-radius: 50%;
+}
+
+.control-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.control-button:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.control-button:active {
+  transform: translateY(0);
+}
+```
+
+**Difficulty Selector:**
+```css
+.difficulty-selector {
+  display: flex;
+  gap: 8px;
+  background: rgba(10, 14, 39, 0.6);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.difficulty-option {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.difficulty-option.active {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
+  color: var(--bg-primary);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.difficulty-option:hover:not(.active) {
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--text-primary);
+}
+```
+
+**Design Decision**: Ripple effect on button click creates tactile feedback. Gradient backgrounds and glows maintain cyberpunk aesthetic.
+
+### Typography
+
+**Font Stack:**
+```css
+:root {
+  --font-primary: 'Rajdhani', 'Orbitron', 'Exo 2', sans-serif;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+```
+
+**Design Decision**: Geometric sans-serif fonts (Rajdhani, Orbitron) evoke futuristic aesthetic. Monospace for technical elements like move notation.
+
+### Performance Optimization
+
+**Animation Performance:**
+- Use `transform` and `opacity` for animations (GPU-accelerated)
+- Avoid animating `width`, `height`, `top`, `left` (triggers layout)
+- Use `will-change` sparingly for critical animations
+- Debounce particle emission to maintain 60fps
+
+**Particle System Optimization:**
+- Limit active particles to 200 maximum
+- Use object pooling to avoid garbage collection
+- Cull particles outside viewport
+- Reduce particle count on mobile devices (50% reduction)
+
+**CSS Optimization:**
+```css
+.animated-element {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force GPU layer */
+}
+```
+
+**Design Decision**: Hardware acceleration ensures smooth 60fps animations even on mid-range devices. Particle limits prevent performance degradation.
+
+### Responsive Behavior
+
+**Breakpoints:**
+```css
+/* Mobile: < 768px */
+/* Tablet: 768px - 1024px */
+/* Desktop: > 1024px */
+```
+
+**Mobile Adaptations:**
+- Reduce glow intensity (50% of desktop)
+- Simplify particle effects (fewer particles, shorter life)
+- Collapse move history to bottom drawer
+- Larger touch targets (minimum 44x44px)
+- Simplified animations (shorter durations)
+
+**Touch Interactions:**
+```typescript
+// Prevent default touch behaviors
+element.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  // Handle touch
+}, { passive: false });
+
+// Add touch feedback
+element.addEventListener('touchstart', () => {
+  element.classList.add('touch-active');
+});
+
+element.addEventListener('touchend', () => {
+  element.classList.remove('touch-active');
+});
+```
+
+**Design Decision**: Mobile-first approach ensures core experience works on all devices. Progressive enhancement adds richer effects on capable hardware.
+
+### Accessibility Considerations
+
+**Color Contrast:**
+- All text meets WCAG AA standards (4.5:1 minimum)
+- Neon colors used for accents, not primary text
+- High contrast mode available via CSS media query
+
+**Reduced Motion:**
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .particle-system {
+    display: none;
+  }
+}
+```
+
+**Keyboard Navigation:**
+- All interactive elements focusable
+- Focus indicators with neon glow
+- Keyboard shortcuts for common actions
+
+**Screen Readers:**
+- ARIA labels for all interactive elements
+- Live regions for game state announcements
+- Semantic HTML structure
+
+**Design Decision**: Cyberpunk aesthetic should not compromise accessibility. Reduced motion support respects user preferences.
+
+### Implementation Architecture
+
+**Component Structure:**
+```
+src/
+├── ui/
+│   ├── components/
+│   │   ├── Game.tsx (main container)
+│   │   ├── Board.tsx (board rendering)
+│   │   ├── Piece.tsx (piece rendering with animations)
+│   │   ├── ParticleCanvas.tsx (particle system)
+│   │   ├── ProfileModal.tsx (profile settings)
+│   │   ├── MoveHistory.tsx (history sidebar)
+│   │   └── GameControls.tsx (control panel)
+│   ├── styles/
+│   │   ├── cyberpunk-theme.css (color palette, base styles)
+│   │   ├── animations.css (keyframe animations)
+│   │   ├── components.css (component-specific styles)
+│   │   └── responsive.css (media queries)
+│   └── hooks/
+│       ├── useParticles.ts (particle system hook)
+│       ├── useAnimations.ts (animation utilities)
+│       └── useTheme.ts (theme management)
+└── logic/
+    └── particleEngine.ts (particle physics)
+```
+
+**Design Decision**: Separate CSS files for theme, animations, and components improve maintainability. Custom hooks encapsulate complex animation logic.
+
 ## Future Extensibility
 
 The architecture supports potential future enhancements:
@@ -794,4 +1609,8 @@ The architecture supports potential future enhancements:
 - **Multiple Profiles**: Support profile switching and management
 - **Profile Statistics**: Track detailed game history and performance metrics
 - **Profile Avatars**: Add visual customization options
+- **Theme Customization**: Allow users to customize color palette
+- **Additional Themes**: Support multiple visual themes (e.g., retro, minimalist)
+- **Sound Effects**: Add audio feedback for moves, captures, and victories
+- **Music**: Background music with cyberpunk aesthetic
 
